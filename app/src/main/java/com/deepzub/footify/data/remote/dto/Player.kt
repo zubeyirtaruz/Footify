@@ -6,11 +6,10 @@ data class Player(
     val firstname: String,
     val height: String,
     val id: Int,
+    val injured: Boolean,
     val lastname: String,
     val name: String,
     val nationality: String,
-    val number: Int,
     val photo: String,
-    val position: String,
     val weight: String
 )

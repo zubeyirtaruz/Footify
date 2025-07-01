@@ -7,7 +7,10 @@ data class Footballer(
     val lastname: String,
     val age: Int,
     val nationality: String,
-    val number: Int,
+    val photo: String,
+    val teamName: String,
+    val teamLogo: String,
+    val leagueLogo: String,
     val position: String,
-    val photo: String
+    val shirtNumber: Any?
 )

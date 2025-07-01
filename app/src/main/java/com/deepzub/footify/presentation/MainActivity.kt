@@ -10,7 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.deepzub.footify.presentation.football_games.FootballGamesScreen
-import com.deepzub.footify.presentation.pack_11.Pack11Screen
 import com.deepzub.footify.presentation.ui.theme.FootifyTheme
 import com.deepzub.footify.presentation.who_are_ya.WhoAreYaScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,8 +35,8 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         val gameId = backStackEntry.arguments?.getInt("gameId")
                         when(gameId){
-                            1 -> WhoAreYaScreen(navController = navController, playerId = 21 )
-                            2 -> Pack11Screen(navController = navController)
+                            1 -> WhoAreYaScreen(navController = navController)
+//                            2 -> Pack11Screen(navController = navController)
                             else -> {
                                 println("GameId error")
                             }

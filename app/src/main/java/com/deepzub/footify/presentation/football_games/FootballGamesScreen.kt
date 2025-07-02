@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.deepzub.footify.domain.model.GameItem
 import com.deepzub.footify.presentation.Screen
 
 
@@ -37,15 +38,15 @@ import com.deepzub.footify.presentation.Screen
 fun FootballGamesScreen(navController: NavController) {
 
     val gameList = listOf(
-        GameItem(id = 1, name = "Who Are Ya?", true),
-        GameItem(id = 2, name = "Pack 11", true),
-        GameItem(id = 3, name = "Football Connections", true),
-        GameItem(id = 4, name = "Football Bingo", true, isMultiplayer = true),
-        GameItem(id = 5, name = "Career Path Challenge", true),
-        GameItem(id = 6, name = "SuperDraft Soccer", true),
-        GameItem(id = 7, name = "Guess the Football Club", true),
-        GameItem(id = 8, name = "Football Wordle", true),
-        GameItem(id = 9, name = "BOX2BOX", true),
+        GameItem(id = 1, name = "Who Are Ya?"),
+        GameItem(id = 2, name = "Pack 11"),
+        GameItem(id = 3, name = "Football Connections"),
+        GameItem(id = 4, name = "Football Bingo"),
+        GameItem(id = 5, name = "Career Path Challenge"),
+        GameItem(id = 6, name = "SuperDraft Soccer",),
+        GameItem(id = 7, name = "Guess the Football Club"),
+        GameItem(id = 8, name = "Football Wordle"),
+        GameItem(id = 9, name = "BOX2BOX")
     )
 
     Scaffold(
@@ -89,7 +90,6 @@ fun GameListItem(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Basit bir ikon simgesi (Dilerseniz Image ile özelleştirebilirsiniz)
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -107,49 +107,7 @@ fun GameListItem(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-
-                Row {
-                    if (game.isDaily) {
-                        LabelChip(text = "Daily", color = Color(0xFF756EF3))
-                    }
-                    if (game.isNew) {
-                        Spacer(modifier = Modifier.width(4.dp))
-                        LabelChip(text = "New", color = Color(0xFFE14D4D))
-                    }
-                    if (game.isMultiplayer) {
-                        Spacer(modifier = Modifier.width(4.dp))
-                        LabelChip(text = "Multiplayer", color = Color(0xFFE7E44F), textColor = Color.Black)
-                    }
-                }
             }
         }
     }
 }
-
-@Composable
-fun LabelChip(
-    text: String,
-    color: Color,
-    textColor: Color = Color.White
-) {
-    Box(
-        modifier = Modifier
-            .background(color, shape = RoundedCornerShape(8.dp))
-            .padding(horizontal = 8.dp, vertical = 2.dp)
-    ) {
-        Text(
-            text = text,
-            color = textColor,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
-data class GameItem(
-    val id: Int,
-    val name: String,
-    val isDaily: Boolean = false,
-    val isNew: Boolean = false,
-    val isMultiplayer: Boolean = false
-)

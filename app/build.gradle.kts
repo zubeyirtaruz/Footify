@@ -82,12 +82,17 @@ dependencies {
     implementation (libs.androidx.hilt.work)
     implementation (libs.androidx.work.runtime.ktx)
 
-
     // Retrofit
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.okhttp)
     implementation (libs.logging.interceptor)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
+    kapt(libs.androidx.room.compiler)
 
     // Coil
     implementation (libs.coil.compose)

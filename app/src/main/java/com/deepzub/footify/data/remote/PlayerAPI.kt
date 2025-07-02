@@ -6,11 +6,10 @@ import retrofit2.http.Query
 
 interface PlayerAPI {
 
-//    players?league=39&season=2023 Premier ligten
-
     @GET("players")
     suspend fun getPlayersFromLeague(
         @Query("league") leagueId : Int,
         @Query("season") seasonId : Int,
+        @Query("page") page: Int
     ) : PlayerDto
 }

@@ -1,7 +1,6 @@
 package com.deepzub.footify.presentation.who_are_ya
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,23 +10,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,15 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import com.deepzub.footify.domain.model.Footballer
-import com.deepzub.footify.util.Constants
 import com.deepzub.footify.util.ShowToast
+import com.deepzub.footify.presentation.who_are_ya.components.FootballerItem
+import com.deepzub.footify.presentation.who_are_ya.components.GuessInputField
+import com.deepzub.footify.presentation.who_are_ya.components.PlayerImage
 
 
 @Composable
@@ -56,173 +49,98 @@ fun WhoAreYaScreen(
     navController: NavController,
     viewModel: WhoAreYaViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.collectAsState().value
-    var photoVisible by remember { mutableStateOf(true) }
+    val state by viewModel.state.collectAsState()
+    val currentPlayer by viewModel.currentPlayer.collectAsState()
+    var photoVisible by remember { mutableStateOf<Boolean?>(null) }
     var guessCount by remember { mutableStateOf(1) }
+    var userQuery by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-//        viewModel.loadTop5Leagues(Constants.SEASON_ID)
-        viewModel.loadFootballers(league = Constants.PREMIER_LEAGUE_ID, season = Constants.SEASON_ID)
+    LaunchedEffect(state.footballers) {
+        if (state.footballers.isNotEmpty()) {
+            viewModel.pickRandomPlayer()
+        }
     }
 
-    if (state.isLoading) {
-        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
-    } else if (state.error.isNotEmpty()) {
-        ShowToast(state.error)
-    } else {
+    when {
+        state.isLoading -> {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .padding(vertical = 30.dp)
-                .background(Color.White),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (photoVisible) {
-                Text(
-                    text = "BIG 5",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color.Gray
-                )
+        state.error.isNotEmpty() -> {
+            ShowToast(state.error)
+        }
 
-                Spacer(modifier = Modifier.height(24.dp))
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.White)
+                    .padding(vertical = 30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
 
-                Text(
-                    text = "?",
-                    style = MaterialTheme.typography.displayLarge,
-                    color = Color.Gray
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Button(
-                        onClick = { photoVisible = false },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
-                    ) {
-                        Icon(Icons.Default.VisibilityOff, contentDescription = "Hide")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Hide Photo")
-                    }
-
-                    Button(
-                        onClick = { photoVisible = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
-                    ) {
-                        Icon(Icons.Default.Visibility,
-                            contentDescription = "Show")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Show Photo")
-                    }
-                }
-            } else {
-                // Fotoğraf gizlenmişse sadece soru işareti ve giriş alanı göster
-
-                var userQuery by remember { mutableStateOf("") }
-                val filteredFootballers = if (userQuery.length >= 2) {
-                    viewModel.searchFootballers(userQuery)
-                } else {
-                    emptyList()
+                if (photoVisible == null) {
+                    Text("BIG 5", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), color = Color.Gray)
+                    Spacer(Modifier.height(24.dp))
                 }
 
+                if (photoVisible == null || photoVisible == false) {
+                    Text("?", style = MaterialTheme.typography.displayLarge, color = Color.Gray)
+                }
 
-                Text(
-                    text = "?",
-                    style = MaterialTheme.typography.displayLarge,
-                    color = Color.Gray
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                OutlinedTextField(
-                    value = userQuery,
-                    onValueChange = { userQuery = it },
-                    placeholder = {
-                        Text("GUESS $guessCount OF 8", color = Color.Gray)
-                    },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .border(1.dp, Color.Black, RoundedCornerShape(6.dp))
-                )
-
-                if (userQuery.length >= 2) {
-                    LazyColumn {
-                        items(filteredFootballers) { player ->
-                            FootballerItem(player)
+                if (photoVisible == true) {
+                    currentPlayer?.photo?.let { url ->
+                        if (url.isNotBlank()) {
+                            Spacer(Modifier.height(16.dp))
+                            PlayerImage(photoUrl = url)
                         }
                     }
                 }
-            }
-        }
-    }
-}
 
+                Spacer(Modifier.height(24.dp))
 
+                if (photoVisible != null) {
+                    GuessInputField(
+                        query = userQuery,
+                        onQueryChange = { userQuery = it },
+                        placeholderText = "GUESS $guessCount OF 8"
+                    )
 
-@Composable
-fun FootballerItem(footballer: Footballer) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clip(RoundedCornerShape(16.dp)),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF9F9F9)
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Team logo
-            AsyncImage(
-                model = footballer.teamLogo,
-                contentDescription = footballer.teamName,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color.White),
-                contentScale = ContentScale.Crop
-            )
+                    if (userQuery.length >= 2) {
+                        val filtered = viewModel.searchFootballers(userQuery)
+                        LazyColumn {
+                            items(filtered) { player -> FootballerItem(player) }
+                        }
+                    }
+                }
 
-            Spacer(modifier = Modifier.width(12.dp))
+                Spacer(Modifier.height(24.dp))
 
-            // Name and team info
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = footballer.name,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF1B1B1B)
-                )
-                Text(
-                    text = footballer.teamName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-            }
+                if (photoVisible == null) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Button(
+                            onClick = { photoVisible = false },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
+                        ) {
+                            Icon(Icons.Default.VisibilityOff, contentDescription = "Hide")
+                            Spacer(Modifier.width(8.dp))
+                            Text("Hide Photo")
+                        }
 
-            // Position badge
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(Color(0xFFE0E0E0))
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Text(
-                    text = getPositionShortName(footballer.position),
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF424242)
-                )
+                        Button(
+                            onClick = { photoVisible = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
+                        ) {
+                            Icon(Icons.Default.Visibility, contentDescription = "Show")
+                            Spacer(Modifier.width(8.dp))
+                            Text("Show Photo")
+                        }
+                    }
+                }
             }
         }
     }
@@ -234,8 +152,6 @@ fun getPositionShortName(position: String): String {
         "defender" -> "DF"
         "midfielder" -> "MF"
         "attacker" -> "FW"
-        else -> position.take(2).uppercase() // Bilinmeyen pozisyonlar için ilk iki harf
+        else -> position.take(2).uppercase()
     }
 }
-
-

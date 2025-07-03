@@ -1,4 +1,4 @@
-package com.deepzub.footify.util
+package com.deepzub.footify.domain.model
 
 enum class ScreenName(val id: Int) {
 

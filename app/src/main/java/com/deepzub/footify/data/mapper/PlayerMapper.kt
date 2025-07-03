@@ -21,7 +21,6 @@ fun Response.toDomain(): Footballer {
     )
 }
 
-// FootballerEntity -> Footballer
 fun FootballerEntity.toDomain(): Footballer {
     return Footballer(
         id = id,
@@ -39,7 +38,6 @@ fun FootballerEntity.toDomain(): Footballer {
     )
 }
 
-// Footballer -> FootballerEntity
 fun Footballer.toEntity(): FootballerEntity {
     return FootballerEntity(
         id = id,

@@ -21,13 +21,25 @@ class WhoAreYaViewModel @Inject constructor(
     private val _state = MutableStateFlow(FootballerState())
     val state: StateFlow<FootballerState> = _state
 
+    private val _currentPlayer = MutableStateFlow<Footballer?>(null)
+    val currentPlayer: StateFlow<Footballer?> = _currentPlayer
+
+    init {
+        loadTop5Leagues()
+    }
+
     // Tek bir lig için futbolcuları getir ve mevcut listeye ekle
-    fun loadFootballers(league: Int, season: Int) {
+    private fun loadFootballers(league: Int, season: Int) {
         getFootballersUseCase(league, season).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    val currentList = _state.value.footballers.toMutableList()
-                    currentList.addAll(result.data ?: emptyList())
+                    // Gelen verileri filtrele (aynı ID varsa alma)
+                    val newPlayers = result.data?.filter { new ->
+                        _state.value.footballers.none { it.id == new.id }
+                    }.orEmpty()
+
+                    // Mevcut listeye sadece yeni gelenleri ekle
+                    val currentList = _state.value.footballers + newPlayers
 
                     _state.value = _state.value.copy(
                         footballers = currentList,
@@ -51,18 +63,18 @@ class WhoAreYaViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    // ✔️ Çoklu lig desteği fonksiyonu
-    fun loadTop5Leagues(season: Int) {
+    // 5 TOP Ligten getir
+    private fun loadTop5Leagues() {
         val leagues = listOf(
             Constants.PREMIER_LEAGUE_ID,
             Constants.BUNDESLIGA_ID,
-            Constants.LA_LIGA_ID,
-            Constants.LIGUE_1_ID,
-            Constants.SERIE_A_ID
+//            Constants.LA_LIGA_ID,
+//            Constants.LIGUE_1_ID,
+//            Constants.SERIE_A_ID
         )
 
         leagues.forEach { leagueId ->
-            loadFootballers(league = leagueId, season = season)
+            loadFootballers(league = leagueId, season = Constants.SEASON_ID)
         }
     }
 
@@ -71,4 +83,9 @@ class WhoAreYaViewModel @Inject constructor(
             footballer.name.contains(query, ignoreCase = true)
         }
     }
+
+    fun pickRandomPlayer() {
+        _currentPlayer.value = _state.value.footballers.randomOrNull()
+    }
+
 }

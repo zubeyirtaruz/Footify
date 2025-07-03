@@ -45,7 +45,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.deepzub.footify.domain.model.Footballer
@@ -59,30 +58,19 @@ fun WhoAreYaScreen(
     viewModel: WhoAreYaViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.collectAsState().value
-    val selectedFootballer = viewModel.selectedFootballer.collectAsState().value
     var photoVisible by remember { mutableStateOf(true) }
     var guessCount by remember { mutableStateOf(1) }
 
     LaunchedEffect(Unit) {
-//        viewModel.loadAllTopLeagues(Constants.SEASON_ID)  Sakın yapma!!! API limitini yer!!!
+//        viewModel.loadTop5Leagues(Constants.SEASON_ID)
         viewModel.loadFootballers(league = Constants.PREMIER_LEAGUE_ID, season = Constants.SEASON_ID)
     }
-
-    selectedFootballer?.let { player ->
-        println("Random Footballer: ${player.name} - ${player.teamName}")
-    } ?: println("Listede futbolcu yok!")
 
     if (state.isLoading) {
         CircularProgressIndicator(modifier = Modifier.fillMaxSize())
     } else if (state.error.isNotEmpty()) {
         ShowToast(state.error)
     } else {
-
-        val randomFootballer = viewModel.getRandomFootballer()
-        randomFootballer?.let { player ->
-            println("Random Footballer: ${player.name} - ${player.teamName}")
-        } ?: println("Listede futbolcu yok!")
-
 
         Column(
             modifier = Modifier

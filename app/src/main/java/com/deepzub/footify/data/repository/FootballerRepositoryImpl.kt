@@ -14,14 +14,15 @@ class FootballerRepositoryImpl @Inject constructor(
 ) : FootballerRepository {
 
     override suspend fun getFootballers(league: Int, season: Int): List<Footballer> {
-        return try {
-            val players = fetchPlayersRecursively(league, season)
-            dao.deleteAllFootballers() // ✅ Eski verileri temizle
-            dao.insertFootballers(players.map { it.toEntity() }) // ✅ Room'a kaydet
-            players
-        } catch (e: Exception) {
-            // ✅ İnternet yoksa veya hata varsa local database'den getir
-            dao.getAllFootballers().map { it.toDomain() }
+        val localFootballers = dao.getAllFootballers().map { it.toDomain() }
+        println("Veriler DB den geldi")
+
+        return localFootballers.ifEmpty {
+            val remoteFootballers = fetchPlayersRecursively(league, season)
+            println("Veriler API dan geldi")
+            dao.insertFootballers(remoteFootballers.map { it.toEntity() })
+            remoteFootballers
+
         }
     }
 
@@ -41,4 +42,12 @@ class FootballerRepositoryImpl @Inject constructor(
             accumulatedPlayers
         }
     }
+
+    // DB deki verileri güncellemek için
+    suspend fun refreshFootballers(league: Int, season: Int) {
+        dao.deleteAllFootballers()
+        val remoteFootballers = fetchPlayersRecursively(league, season)
+        dao.insertFootballers(remoteFootballers.map { it.toEntity() })
+    }
+
 }

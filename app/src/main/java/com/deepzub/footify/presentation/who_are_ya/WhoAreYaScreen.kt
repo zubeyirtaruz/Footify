@@ -18,9 +18,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -74,97 +73,85 @@ fun WhoAreYaScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFF1B0832)) // Arka plan rengi
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .padding(vertical = 30.dp)
+                .background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            if (photoVisible) {
+                Text(
+                    text = "BIG 5",
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = Color.Gray
+                )
 
-            // Orta kutu
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.White),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                if (photoVisible) {
-                    Text(
-                        text = "BIG 5",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        color = Color.Gray
-                    )
+                Spacer(modifier = Modifier.height(24.dp))
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "?",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = Color.Gray
+                )
 
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Photo",
-                        modifier = Modifier.size(100.dp),
-                        tint = Color.Gray
-                    )
+                Spacer(modifier = Modifier.height(24.dp))
 
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Button(
-                            onClick = { photoVisible = false },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
-                        ) {
-                            Icon(Icons.Default.Phone, contentDescription = "Hide")
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Hide Photo")
-                        }
-
-                        Button(
-                            onClick = { photoVisible = true },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
-                        ) {
-                            Icon(Icons.Default.Refresh,
-                                contentDescription = "Show")
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Show Photo")
-                        }
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Button(
+                        onClick = { photoVisible = false },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
+                    ) {
+                        Icon(Icons.Default.VisibilityOff, contentDescription = "Hide")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Hide Photo")
                     }
+
+                    Button(
+                        onClick = { photoVisible = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
+                    ) {
+                        Icon(Icons.Default.Visibility,
+                            contentDescription = "Show")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Show Photo")
+                    }
+                }
+            } else {
+                // Fotoğraf gizlenmişse sadece soru işareti ve giriş alanı göster
+
+                var userQuery by remember { mutableStateOf("") }
+                val filteredFootballers = if (userQuery.length >= 2) {
+                    viewModel.searchFootballers(userQuery)
                 } else {
-                    // Fotoğraf gizlenmişse sadece soru işareti ve giriş alanı göster
-
-                    var userQuery by remember { mutableStateOf("") }
-                    val filteredFootballers = if (userQuery.length >= 2) {
-                        viewModel.searchFootballers(userQuery)
-                    } else {
-                        emptyList()
-                    }
+                    emptyList()
+                }
 
 
-                    Text(
-                        text = "?",
-                        style = MaterialTheme.typography.displayLarge,
-                        color = Color.Gray
-                    )
+                Text(
+                    text = "?",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = Color.Gray
+                )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                    OutlinedTextField(
-                        value = userQuery,
-                        onValueChange = { userQuery = it },
-                        placeholder = {
-                            Text("GUESS $guessCount OF 8", color = Color.Gray)
-                        },
-                        singleLine = true,
-                        modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .border(1.dp, Color.Black, RoundedCornerShape(6.dp))
-                    )
+                OutlinedTextField(
+                    value = userQuery,
+                    onValueChange = { userQuery = it },
+                    placeholder = {
+                        Text("GUESS $guessCount OF 8", color = Color.Gray)
+                    },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .border(1.dp, Color.Black, RoundedCornerShape(6.dp))
+                )
 
-                    if (userQuery.length >= 2) {
-                        LazyColumn {
-                            items(filteredFootballers) { player ->
-                                FootballerItem(player)
-                            }
+                if (userQuery.length >= 2) {
+                    LazyColumn {
+                        items(filteredFootballers) { player ->
+                            FootballerItem(player)
                         }
                     }
                 }

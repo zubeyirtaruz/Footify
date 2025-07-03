@@ -21,8 +21,6 @@ class WhoAreYaViewModel @Inject constructor(
     private val _state = MutableStateFlow(FootballerState())
     val state: StateFlow<FootballerState> = _state
 
-    private val _selectedFootballer = MutableStateFlow<Footballer?>(null)
-
     // Tek bir lig için futbolcuları getir ve mevcut listeye ekle
     fun loadFootballers(league: Int, season: Int) {
         getFootballersUseCase(league, season).onEach { result ->

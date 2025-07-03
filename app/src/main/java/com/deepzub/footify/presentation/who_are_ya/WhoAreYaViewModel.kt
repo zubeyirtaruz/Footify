@@ -3,7 +3,10 @@ package com.deepzub.footify.presentation.who_are_ya
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deepzub.footify.domain.model.Footballer
+import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
+import com.deepzub.footify.presentation.who_are_ya.model.GuessRow
 import com.deepzub.footify.domain.use_case.get_player.GetFootballersUseCase
+import com.deepzub.footify.presentation.who_are_ya.components.getPositionShortName
 import com.deepzub.footify.util.Constants
 import com.deepzub.footify.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -86,6 +89,29 @@ class WhoAreYaViewModel @Inject constructor(
 
     fun pickRandomPlayer() {
         _currentPlayer.value = _state.value.footballers.randomOrNull()
+    }
+
+    // Yeni tahmin yap
+    fun makeGuess(guess: Footballer) {
+        val target = _currentPlayer.value ?: return
+
+        val attrs = listOf(
+            GuessAttribute("NAT",  guess.nationality,  guess.nationality == target.nationality),
+            GuessAttribute("LEA", guess.leagueLogo, guess.leagueLogo == target.leagueLogo, isImage = true),
+            GuessAttribute("TEAM", guess.teamLogo, guess.teamLogo == target.teamLogo, isImage = true),
+            GuessAttribute(
+                "POS",
+                getPositionShortName(guess.position),
+                getPositionShortName(guess.position) == getPositionShortName(target.position)
+            ),
+            GuessAttribute("AGE",  guess.age.toString(),  guess.age      == target.age),
+//            GuessAttribute("SHIRT", guess.shirtNumber,  guess.shirtNumber == target.shirtNumber)
+        )
+
+        val newRow = GuessRow(guess, attrs)
+        _state.value = _state.value.copy(
+            guesses = _state.value.guesses + newRow
+        )
     }
 
 }

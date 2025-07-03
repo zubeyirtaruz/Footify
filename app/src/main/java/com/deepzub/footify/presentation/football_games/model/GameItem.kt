@@ -1,4 +1,4 @@
-package com.deepzub.footify.domain.model
+package com.deepzub.footify.presentation.football_games.model
 
 data class GameItem(
     val id: Int,

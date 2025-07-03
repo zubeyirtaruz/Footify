@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.deepzub.footify.util.ShowToast
 import com.deepzub.footify.presentation.who_are_ya.components.FootballerItem
 import com.deepzub.footify.presentation.who_are_ya.components.GuessInputField
+import com.deepzub.footify.presentation.who_are_ya.components.GuessRowItem
 import com.deepzub.footify.presentation.who_are_ya.components.PlayerImage
 
 
@@ -59,6 +60,7 @@ fun WhoAreYaScreen(
         if (state.footballers.isNotEmpty()) {
             viewModel.pickRandomPlayer()
         }
+        println(viewModel.currentPlayer.value?.name)
     }
 
     when {
@@ -78,7 +80,7 @@ fun WhoAreYaScreen(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.White)
-                    .padding(vertical = 30.dp),
+                    .padding(vertical = 50.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -113,7 +115,24 @@ fun WhoAreYaScreen(
                     if (userQuery.length >= 2) {
                         val filtered = viewModel.searchFootballers(userQuery)
                         LazyColumn {
-                            items(filtered) { player -> FootballerItem(player) }
+                            items(filtered) { player ->
+
+                                FootballerItem(player) {
+                                    // item’a onClick ekleyip:
+                                    viewModel.makeGuess(player)
+                                    userQuery = ""
+                                    guessCount += 1
+                                }
+                            }
+                        }
+                    }
+
+                    if (state.guesses.isNotEmpty()) {
+                        Spacer(Modifier.height(16.dp))
+                        LazyColumn {
+                            items(state.guesses) { row ->
+                                GuessRowItem(row)
+                            }
                         }
                     }
                 }
@@ -143,15 +162,5 @@ fun WhoAreYaScreen(
                 }
             }
         }
-    }
-}
-
-fun getPositionShortName(position: String): String {
-    return when (position.lowercase()) {
-        "goalkeeper" -> "GK"
-        "defender" -> "DF"
-        "midfielder" -> "MF"
-        "attacker" -> "FW"
-        else -> position.take(2).uppercase()
     }
 }

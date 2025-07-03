@@ -1,7 +1,7 @@
 package com.deepzub.footify.presentation.football_games
 
 import androidx.lifecycle.ViewModel
-import com.deepzub.footify.domain.model.GameItem
+import com.deepzub.footify.presentation.football_games.model.GameItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

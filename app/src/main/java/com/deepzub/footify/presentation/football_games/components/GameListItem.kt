@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.deepzub.footify.domain.model.GameItem
+import com.deepzub.footify.presentation.football_games.model.GameItem
 import com.deepzub.footify.presentation.Screen
 
 @Composable

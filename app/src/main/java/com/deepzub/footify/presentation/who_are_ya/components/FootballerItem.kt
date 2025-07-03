@@ -1,6 +1,7 @@
 package com.deepzub.footify.presentation.who_are_ya.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,13 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.deepzub.footify.domain.model.Footballer
-import com.deepzub.footify.presentation.who_are_ya.getPositionShortName
+
 
 @Composable
-fun FootballerItem(footballer: Footballer) {
+fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(16.dp)),
         colors = CardDefaults.cardColors(
@@ -90,5 +92,16 @@ fun FootballerItem(footballer: Footballer) {
                 )
             }
         }
+    }
+}
+
+
+fun getPositionShortName(position: String): String {
+    return when (position.lowercase()) {
+        "goalkeeper" -> "GK"
+        "defender" -> "DF"
+        "midfielder" -> "MF"
+        "attacker" -> "FW"
+        else -> position.take(2).uppercase()
     }
 }

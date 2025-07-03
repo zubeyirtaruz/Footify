@@ -3,6 +3,7 @@ package com.deepzub.footify.presentation.who_are_ya
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deepzub.footify.domain.model.Footballer
+import com.deepzub.footify.domain.use_case.get_country.GetCountriesUseCase
 import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
 import com.deepzub.footify.presentation.who_are_ya.model.GuessRow
 import com.deepzub.footify.domain.use_case.get_player.GetFootballersUseCase
@@ -18,17 +19,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WhoAreYaViewModel @Inject constructor(
-    private val getFootballersUseCase: GetFootballersUseCase
+    private val getFootballersUseCase: GetFootballersUseCase,
+    private val getCountriesUseCase: GetCountriesUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(FootballerState())
-    val state: StateFlow<FootballerState> = _state
+    private val _footballerState = MutableStateFlow(FootballerState())
+    val footballerState: StateFlow<FootballerState> = _footballerState
+
+    private val _countryState = MutableStateFlow(CountryState())
+    val countryState: StateFlow<CountryState> = _countryState
 
     private val _currentPlayer = MutableStateFlow<Footballer?>(null)
     val currentPlayer: StateFlow<Footballer?> = _currentPlayer
 
     init {
         loadTop5Leagues()
+        loadCountries()
     }
 
     // Tek bir lig için futbolcuları getir ve mevcut listeye ekle
@@ -38,13 +44,13 @@ class WhoAreYaViewModel @Inject constructor(
                 is Resource.Success -> {
                     // Gelen verileri filtrele (aynı ID varsa alma)
                     val newPlayers = result.data?.filter { new ->
-                        _state.value.footballers.none { it.id == new.id }
+                        _footballerState.value.footballers.none { it.id == new.id }
                     }.orEmpty()
 
                     // Mevcut listeye sadece yeni gelenleri ekle
-                    val currentList = _state.value.footballers + newPlayers
+                    val currentList = _footballerState.value.footballers + newPlayers
 
-                    _state.value = _state.value.copy(
+                    _footballerState.value = _footballerState.value.copy(
                         footballers = currentList,
                         isLoading = false,
                         error = ""
@@ -52,7 +58,7 @@ class WhoAreYaViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    _state.value = _state.value.copy(
+                    _footballerState.value = _footballerState.value.copy(
                         error = result.message ?: "Error",
                         isLoading = false
                     )
@@ -60,7 +66,34 @@ class WhoAreYaViewModel @Inject constructor(
                 }
 
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true)
+                    _footballerState.value = _footballerState.value.copy(isLoading = true)
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun loadCountries() {
+        getCountriesUseCase().onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+
+                    _countryState.value = _countryState.value.copy(
+                        countries = _countryState.value.countries,
+                        isLoading = false,
+                        error = ""
+                    )
+                }
+
+                is Resource.Error -> {
+                    _countryState.value = _countryState.value.copy(
+                        error = result.message ?: "Error",
+                        isLoading = false
+                    )
+                    println("Errors: ${result.message}")
+                }
+
+                is Resource.Loading -> {
+                    _countryState.value = _countryState.value.copy(isLoading = true)
                 }
             }
         }.launchIn(viewModelScope)
@@ -82,13 +115,13 @@ class WhoAreYaViewModel @Inject constructor(
     }
 
     fun searchFootballers(query: String): List<Footballer> {
-        return _state.value.footballers.filter { footballer ->
+        return _footballerState.value.footballers.filter { footballer ->
             footballer.name.contains(query, ignoreCase = true)
         }
     }
 
     fun pickRandomPlayer() {
-        _currentPlayer.value = _state.value.footballers.randomOrNull()
+        _currentPlayer.value = _footballerState.value.footballers.randomOrNull()
     }
 
     // Yeni tahmin yap
@@ -109,8 +142,8 @@ class WhoAreYaViewModel @Inject constructor(
         )
 
         val newRow = GuessRow(guess, attrs)
-        _state.value = _state.value.copy(
-            guesses = _state.value.guesses + newRow
+        _footballerState.value = _footballerState.value.copy(
+            guesses = _footballerState.value.guesses + newRow
         )
     }
 

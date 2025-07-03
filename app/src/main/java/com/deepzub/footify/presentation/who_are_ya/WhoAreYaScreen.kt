@@ -50,28 +50,29 @@ fun WhoAreYaScreen(
     navController: NavController,
     viewModel: WhoAreYaViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val footballerState by viewModel.footballerState.collectAsState()
+    val countryState by viewModel.countryState.collectAsState()
     val currentPlayer by viewModel.currentPlayer.collectAsState()
     var photoVisible by remember { mutableStateOf<Boolean?>(null) }
     var guessCount by remember { mutableStateOf(1) }
     var userQuery by remember { mutableStateOf("") }
 
-    LaunchedEffect(state.footballers) {
-        if (state.footballers.isNotEmpty()) {
+    LaunchedEffect(footballerState.footballers) {
+        if (footballerState.footballers.isNotEmpty()) {
             viewModel.pickRandomPlayer()
         }
         println(viewModel.currentPlayer.value?.name)
     }
 
     when {
-        state.isLoading -> {
+        footballerState.isLoading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
 
-        state.error.isNotEmpty() -> {
-            ShowToast(state.error)
+        footballerState.error.isNotEmpty() -> {
+            ShowToast(footballerState.error)
         }
 
         else -> {
@@ -127,10 +128,10 @@ fun WhoAreYaScreen(
                         }
                     }
 
-                    if (state.guesses.isNotEmpty()) {
+                    if (footballerState.guesses.isNotEmpty()) {
                         Spacer(Modifier.height(16.dp))
                         LazyColumn {
-                            items(state.guesses) { row ->
+                            items(footballerState.guesses) { row ->
                                 GuessRowItem(row)
                             }
                         }

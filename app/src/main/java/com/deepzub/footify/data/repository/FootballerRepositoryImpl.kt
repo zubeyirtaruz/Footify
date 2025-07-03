@@ -2,26 +2,46 @@ package com.deepzub.footify.data.repository
 
 import com.deepzub.footify.data.mapper.toDomain
 import com.deepzub.footify.data.mapper.toEntity
+import com.deepzub.footify.data.remote.CountryAPI
 import com.deepzub.footify.data.remote.PlayerAPI
+import com.deepzub.footify.data.room.CountryDao
 import com.deepzub.footify.data.room.FootballerDao
+import com.deepzub.footify.domain.model.Country
 import com.deepzub.footify.domain.model.Footballer
 import com.deepzub.footify.domain.repository.FootballerRepository
 import javax.inject.Inject
 
 class FootballerRepositoryImpl @Inject constructor(
-    private val api: PlayerAPI,
-    private val dao: FootballerDao
+    private val playerAPI: PlayerAPI,
+    private val countryAPI: CountryAPI,
+    private val footballerDao: FootballerDao,
+    private val countryDao: CountryDao
+
 ) : FootballerRepository {
 
     override suspend fun getFootballers(league: Int, season: Int): List<Footballer> {
-        val localFootballers = dao.getAllFootballers().map { it.toDomain() }
-        println("Veriler DB den geldi")
+        val localFootballers = footballerDao.getAllFootballers().map { it.toDomain() }
+        println("Veriler Footballer DB den geldi")
 
         return localFootballers.ifEmpty {
             val remoteFootballers = fetchPlayersRecursively(league, season)
-            println("Veriler API dan geldi")
-            dao.insertFootballers(remoteFootballers.map { it.toEntity() })
+            println("Veriler Footballer API dan geldi")
+            footballerDao.insertFootballers(remoteFootballers.map { it.toEntity() })
             remoteFootballers
+
+        }
+    }
+
+    override suspend fun getCountries(): List<Country> {
+
+        val localCountries = countryDao.getAllCountries().map { it.toDomain() }
+        println("Veriler Country DB den geldi")
+
+        return localCountries.ifEmpty {
+            val remoteCountries = fetchCountries()
+            println("Veriler Country API dan geldi")
+            countryDao.insertCountries(remoteCountries.map { it.toEntity() })
+            remoteCountries
 
         }
     }
@@ -32,7 +52,7 @@ class FootballerRepositoryImpl @Inject constructor(
         page: Int = 1,
         accumulatedPlayers: MutableList<Footballer> = mutableListOf()
     ): List<Footballer> {
-        val response = api.getPlayersFromLeague(league, season, page)
+        val response = playerAPI.getPlayersFromLeague(league, season, page)
         val players = response.response.map { it.toDomain() }
         accumulatedPlayers.addAll(players)
 
@@ -43,11 +63,17 @@ class FootballerRepositoryImpl @Inject constructor(
         }
     }
 
+    private suspend fun fetchCountries(): List<Country> {
+        val response = countryAPI.getCountries()
+        val countries = response.response.map { it.toDomain() }
+        return countries
+    }
+
     // DB deki verileri güncellemek için
     suspend fun refreshFootballers(league: Int, season: Int) {
-        dao.deleteAllFootballers()
+        footballerDao.deleteAllFootballers()
         val remoteFootballers = fetchPlayersRecursively(league, season)
-        dao.insertFootballers(remoteFootballers.map { it.toEntity() })
+        footballerDao.insertFootballers(remoteFootballers.map { it.toEntity() })
     }
 
 }

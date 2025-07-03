@@ -4,10 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [FootballerEntity::class],
+    entities = [FootballerEntity::class, CountryEntity::class],
     version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun footballerDao(): FootballerDao
+    abstract fun countryDao(): CountryDao
 }

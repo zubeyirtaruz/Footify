@@ -2,9 +2,11 @@ package com.deepzub.footify.data.dependencyinjection
 
 import android.content.Context
 import androidx.room.Room
+import com.deepzub.footify.data.remote.CountryAPI
 import com.deepzub.footify.data.remote.PlayerAPI
 import com.deepzub.footify.data.repository.FootballerRepositoryImpl
 import com.deepzub.footify.data.room.AppDatabase
+import com.deepzub.footify.data.room.CountryDao
 import com.deepzub.footify.data.room.FootballerDao
 import com.deepzub.footify.domain.repository.FootballerRepository
 import com.deepzub.footify.util.Constants
@@ -24,7 +26,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePlayerApi(): PlayerAPI {
+    fun provideRetrofit(): Retrofit {
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()
@@ -39,7 +41,6 @@ object AppModule {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(PlayerAPI::class.java)
     }
 
     @Provides
@@ -50,17 +51,31 @@ object AppModule {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            "footballer_db"
+            "footify_db"
         ).build()
     }
 
     @Provides
     @Singleton
     fun provideFootballerRepository(
-        api: PlayerAPI,
-        dao: FootballerDao
+        playerAPI: PlayerAPI,
+        countryAPI: CountryAPI,
+        footballerDao: FootballerDao,
+        countryDao: CountryDao
     ): FootballerRepository {
-        return FootballerRepositoryImpl(api, dao)
+        return FootballerRepositoryImpl(playerAPI,countryAPI,footballerDao,countryDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providePlayerApi(retrofit: Retrofit): PlayerAPI {
+        return retrofit.create(PlayerAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCountryApi(retrofit: Retrofit): CountryAPI {
+        return retrofit.create(CountryAPI::class.java)
     }
 
     @Provides
@@ -68,4 +83,11 @@ object AppModule {
     fun provideFootballerDao(db: AppDatabase): FootballerDao {
         return db.footballerDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideCountryDao(db: AppDatabase): CountryDao {
+        return db.countryDao()
+    }
+
 }

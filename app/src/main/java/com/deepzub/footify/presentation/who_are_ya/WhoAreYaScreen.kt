@@ -53,16 +53,38 @@ fun WhoAreYaScreen(
     val footballerState by viewModel.footballerState.collectAsState()
     val countryState by viewModel.countryState.collectAsState()
     val currentPlayer by viewModel.currentPlayer.collectAsState()
+
     var photoVisible by remember { mutableStateOf<Boolean?>(null) }
     var guessCount by remember { mutableStateOf(1) }
     var userQuery by remember { mutableStateOf("") }
-    val isDataReady = footballerState.footballers.isNotEmpty() && !footballerState.isLoading && !countryState.isLoading && countryState.countries.isNotEmpty()
+    var isGameOver by remember { mutableStateOf(false) }
+
+    val isDataReady = footballerState.footballers.isNotEmpty()
+            && !footballerState.isLoading
+            && countryState.countries.isNotEmpty()
+            && !countryState.isLoading
 
     LaunchedEffect(isDataReady) {
         if (isDataReady) {
             viewModel.pickRandomPlayer()
         }
         println(viewModel.currentPlayer.value?.name)
+    }
+
+    // Doğru tahmin ya da 8 hak dolunca kontrol
+    LaunchedEffect(guessCount, footballerState.guesses) {
+        if (footballerState.guesses.isNotEmpty()) {
+            val lastGuess = footballerState.guesses.last()
+            val allCorrect = lastGuess.attributes.all { it?.isCorrect == true }
+
+            if (allCorrect) {
+                println("Kazandın!")
+                isGameOver = true
+            } else if (guessCount > 8) {
+                println("Kaybettin!")
+                isGameOver = true
+            }
+        }
     }
 
     when {
@@ -92,7 +114,11 @@ fun WhoAreYaScreen(
             ) {
 
                 if (photoVisible == null) {
-                    Text("BIG 5", style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), color = Color.Gray)
+                    Text(
+                        "BIG 5",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = Color.Gray
+                    )
                     Spacer(Modifier.height(24.dp))
                 }
 
@@ -101,33 +127,32 @@ fun WhoAreYaScreen(
                 }
 
                 if (photoVisible == true) {
-                    currentPlayer?.photo?.let { url ->
-                        if (url.isNotBlank()) {
-                            Spacer(Modifier.height(16.dp))
-                            PlayerImage(photoUrl = url)
-                        }
+                    currentPlayer?.photo?.takeIf { it.isNotBlank() }?.let { url ->
+                        Spacer(Modifier.height(16.dp))
+                        PlayerImage(photoUrl = url)
                     }
                 }
 
                 Spacer(Modifier.height(24.dp))
 
-                if (photoVisible != null) {
+                if (photoVisible != null ) {
                     GuessInputField(
                         query = userQuery,
                         onQueryChange = { userQuery = it },
-                        placeholderText = "GUESS $guessCount OF 8"
+                        placeholderText = "GUESS $guessCount OF 8",
+                        enabled = !isGameOver // 👈 önemli
                     )
 
-                    if (userQuery.length >= 2) {
+                    if (userQuery.length >= 2 && !isGameOver) {
                         val filtered = viewModel.searchFootballers(userQuery)
                         LazyColumn {
                             items(filtered) { player ->
-
                                 FootballerItem(player) {
-                                    // item’a onClick ekleyip:
-                                    viewModel.makeGuess(player)
-                                    userQuery = ""
-                                    guessCount += 1
+                                    if (!isGameOver) {
+                                        viewModel.makeGuess(player)
+                                        userQuery = ""
+                                        guessCount += 1
+                                    }
                                 }
                             }
                         }

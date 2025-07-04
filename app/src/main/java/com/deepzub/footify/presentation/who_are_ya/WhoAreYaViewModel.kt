@@ -127,7 +127,6 @@ class WhoAreYaViewModel @Inject constructor(
         }?.flag
     }
 
-    // Yeni tahmin yap
     fun makeGuess(guess: Footballer) {
         val target = _currentPlayer.value ?: return
 
@@ -148,7 +147,12 @@ class WhoAreYaViewModel @Inject constructor(
                 getPositionShortName(guess.position),
                 getPositionShortName(guess.position) == getPositionShortName(target.position)
             ),
-            GuessAttribute("AGE",  guess.age.toString(),  guess.age      == target.age),
+            GuessAttribute(
+                label = "AGE",
+                value = guess.age.toString(),
+                isCorrect = guess.age == target.age,
+                correctValue = target.age.toString()
+            )
 //            GuessAttribute("SHIRT", guess.shirtNumber,  guess.shirtNumber == target.shirtNumber)
         )
 

@@ -49,7 +49,6 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Team logo
             AsyncImage(
                 model = footballer.teamLogo,
                 contentDescription = footballer.teamName,
@@ -62,7 +61,6 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Name and team info
             Column(
                 modifier = Modifier.weight(1f)
             ) {
@@ -78,7 +76,6 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
                 )
             }
 
-            // Position badge
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
@@ -94,7 +91,6 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
         }
     }
 }
-
 
 fun getPositionShortName(position: String): String {
     return when (position.lowercase()) {

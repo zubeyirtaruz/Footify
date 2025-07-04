@@ -14,13 +14,15 @@ import androidx.compose.ui.unit.dp
 fun GuessInputField(
     query: String,
     onQueryChange: (String) -> Unit,
-    placeholderText: String
+    placeholderText: String,
+    enabled: Boolean = true
 ) {
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
         placeholder = { Text(placeholderText, color = Color.Gray) },
         singleLine = true,
+        enabled = enabled,
         modifier = Modifier
             .fillMaxWidth(0.8f)
             .border(1.dp, Color.Black, RoundedCornerShape(6.dp))

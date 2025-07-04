@@ -1,7 +1,6 @@
 package com.deepzub.footify.presentation.who_are_ya.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,7 +32,6 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
         modifier = modifier.width(60.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // ⬇️ İçerik kutusu (text veya görsel olabilir)
         Box(
             modifier = Modifier
                 .size(50.dp)
@@ -57,7 +54,7 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
                 )
             } else {
                 Text(
-                    text = attr.value,
+                    text = getDisplayAgeText(attr),
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
@@ -76,5 +73,21 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
             color = Color.DarkGray,
             textAlign = TextAlign.Center
         )
+    }
+}
+
+fun getDisplayAgeText(attr: GuessAttribute): String {
+    val isIncorrectAge = attr.label == "AGE" && !attr.isCorrect
+    val guessedAge = attr.value.toIntOrNull()
+    val actualAge = attr.correctValue?.toIntOrNull()
+
+    return if (isIncorrectAge && guessedAge != null && actualAge != null) {
+        when {
+            guessedAge < actualAge -> "↑ $guessedAge"
+            guessedAge > actualAge -> "↓ $guessedAge"
+            else -> guessedAge.toString()
+        }
+    } else {
+        attr.value
     }
 }

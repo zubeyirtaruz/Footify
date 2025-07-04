@@ -25,7 +25,7 @@ fun GuessRowItem(row: GuessRow) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp), // satırlar arası boşluk
+            .padding(vertical = 8.dp, horizontal = 16.dp),
         colors = CardDefaults.cardColors(containerColor =  Color(0xFFE3F2FD)),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp)

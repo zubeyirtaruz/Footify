@@ -10,13 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -137,15 +138,17 @@ fun WhoAreYaScreen(
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "New Footballer",
-                            tint = Color.Gray
+                            tint = Color.Gray,
+                            modifier = Modifier.size(28.dp)
                         )
                     }
 
                     IconButton(onClick = { showHelp = true }) {
                         Icon(
-                            imageVector = Icons.Default.HelpOutline,
-                            contentDescription = "Help",
-                            tint = Color.Gray
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "How to Play",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
@@ -161,7 +164,12 @@ fun WhoAreYaScreen(
                 }
 
                 if (photoVisible == null || photoVisible == false) {
-                    Text("?", style = MaterialTheme.typography.displayLarge, color = Color.Gray)
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                        contentDescription = "How to Play",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(100.dp)
+                    )
                 }
 
                 if (photoVisible == true) {

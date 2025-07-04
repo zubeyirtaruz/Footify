@@ -25,10 +25,10 @@ fun GuessRowItem(row: GuessRow) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
-        colors = CardDefaults.cardColors(containerColor =  Color(0xFFE3F2FD)),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier
@@ -50,8 +50,8 @@ fun GuessRowItem(row: GuessRow) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 row.attributes.forEach { attr ->
-                    if (attr != null) {
-                        AttrBox(attr)
+                    attr?.let {
+                        AttrBox(it)
                     }
                 }
             }

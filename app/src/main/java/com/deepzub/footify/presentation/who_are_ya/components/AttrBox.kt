@@ -16,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.deepzub.footify.presentation.who_are_ya.model.AttributeType
 import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
 
 @Composable
@@ -32,11 +32,13 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
         modifier = modifier.width(60.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val bgColor = if (attr.isCorrect) Color(0xFF4CAF50) else Color(0xFFE0E0E0)
+
         Box(
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape)
-                .background(if (attr.isCorrect) Color(0xFF4CAF50) else Color(0xFFE0E0E0)),
+                .background(bgColor),
             contentAlignment = Alignment.Center
         ) {
             if (attr.isImage) {
@@ -47,19 +49,15 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
                         .crossfade(true)
                         .build(),
                     contentDescription = attr.label,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clip(CircleShape),
+                    modifier = Modifier.size(30.dp).clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             } else {
                 Text(
                     text = getDisplayAgeText(attr),
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = Color.Black
-                    ),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
             }
@@ -77,15 +75,15 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
 }
 
 fun getDisplayAgeText(attr: GuessAttribute): String {
-    val isIncorrectAge = attr.label == "AGE" && !attr.isCorrect
-    val guessedAge = attr.value.toIntOrNull()
-    val actualAge = attr.correctValue?.toIntOrNull()
+    val isIncorrectAge = attr.type == AttributeType.AGE && !attr.isCorrect
+    val guessed = attr.value.toIntOrNull()
+    val actual = attr.correctValue?.toIntOrNull()
 
-    return if (isIncorrectAge && guessedAge != null && actualAge != null) {
+    return if (isIncorrectAge && guessed != null && actual != null) {
         when {
-            guessedAge < actualAge -> "$guessedAge↑"
-            guessedAge > actualAge -> "$guessedAge↓"
-            else -> guessedAge.toString()
+            guessed < actual -> "$guessed↑"
+            guessed > actual -> "$guessed↓"
+            else -> guessed.toString()
         }
     } else {
         attr.value

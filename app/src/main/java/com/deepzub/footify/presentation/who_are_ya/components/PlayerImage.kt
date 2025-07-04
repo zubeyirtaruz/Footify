@@ -1,6 +1,5 @@
 package com.deepzub.footify.presentation.who_are_ya.components
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -31,7 +30,7 @@ import com.deepzub.footify.util.calculateBlurLevel
 fun PlayerImage(
     photoUrl: String,
     guessCount: Int,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier.size(200.dp)
+    modifier: Modifier = Modifier.size(200.dp)
 ) {
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) }

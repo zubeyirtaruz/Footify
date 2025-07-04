@@ -20,7 +20,12 @@ fun GuessInputField(
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        placeholder = { Text(placeholderText, color = Color.Gray) },
+        placeholder = {
+            Text(
+                text = placeholderText,
+                color = Color.Gray
+            )
+        },
         singleLine = true,
         enabled = enabled,
         modifier = Modifier

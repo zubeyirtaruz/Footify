@@ -32,15 +32,11 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(onClick = onClick)
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(16.dp)),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF9F9F9)
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier
@@ -60,9 +56,7 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = footballer.name,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -75,28 +69,31 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(Color(0xFFE0E0E0))
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Text(
-                    text = getPositionShortName(footballer.position),
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF424242)
-                )
-            }
+            PositionTag(footballer.position)
         }
     }
 }
 
-fun getPositionShortName(position: String): String {
-    return when (position.lowercase()) {
-        "goalkeeper" -> "GK"
-        "defender" -> "DF"
-        "midfielder" -> "MF"
-        "attacker" -> "FW"
-        else -> position.take(2).uppercase()
+@Composable
+private fun PositionTag(position: String) {
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(0xFFE0E0E0))
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    ) {
+        Text(
+            text = getPositionShortName(position),
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            color = Color(0xFF424242)
+        )
     }
+}
+
+fun getPositionShortName(position: String): String = when (position.lowercase()) {
+    "goalkeeper" -> "GK"
+    "defender" -> "DF"
+    "midfielder" -> "MF"
+    "attacker" -> "FW"
+    else -> position.take(2).uppercase()
 }

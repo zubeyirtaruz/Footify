@@ -9,6 +9,7 @@ import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
 import com.deepzub.footify.presentation.who_are_ya.model.GuessRow
 import com.deepzub.footify.domain.use_case.get_player.GetFootballersUseCase
 import com.deepzub.footify.presentation.who_are_ya.components.getPositionShortName
+import com.deepzub.footify.presentation.who_are_ya.model.AttributeType
 import com.deepzub.footify.util.Constants
 import com.deepzub.footify.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -135,40 +136,42 @@ class WhoAreYaViewModel @Inject constructor(
         val attrs = listOf(
             getFlagUrl(_countryState.value.countries, guess.nationality)?.let {
                 GuessAttribute(
-                    label = "NAT",
+                    type = AttributeType.NATIONALITY,
                     value = it,
                     isCorrect = guess.nationality == target.nationality,
                     isImage = true
                 )
             },
             GuessAttribute(
-                label = "LEA",
+                type = AttributeType.LEAGUE,
                 value = guess.leagueLogo,
                 isCorrect = guess.leagueLogo == target.leagueLogo,
                 isImage = true
             ),
             GuessAttribute(
-                label = "TEAM",
+                type = AttributeType.TEAM,
                 value = guess.teamLogo,
                 isCorrect = guess.teamLogo == target.teamLogo,
                 isImage = true
             ),
             GuessAttribute(
-                label = "POS",
+                type = AttributeType.POSITION,
                 value = getPositionShortName(guess.position),
                 isCorrect = getPositionShortName(guess.position) == getPositionShortName(target.position)
             ),
             GuessAttribute(
-                label = "AGE",
+                type = AttributeType.AGE,
                 value = guess.age.toString(),
                 isCorrect = guess.age == target.age,
                 correctValue = target.age.toString()
             ),
 //            GuessAttribute(
-//                label = "SHIRT",
-//                value =  guess.shirtNumber,
+//                type = AttributeType.SHIRT,
+//                value = guess.shirtNumber,
 //                isCorrect = guess.shirtNumber == target.shirtNumber,
-//            )
+//                correctValue = target.shirtNumber
+//            ),
+
         )
 
         val newRow = GuessRow(guess, attrs)

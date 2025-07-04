@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -119,6 +120,13 @@ class WhoAreYaViewModel @Inject constructor(
 
     fun pickRandomPlayer() {
         _currentPlayer.value = _footballerState.value.footballers.randomOrNull()
+    }
+
+    fun resetGame() {
+        _footballerState.update { current ->
+            current.copy(guesses = emptyList())
+        }
+        pickRandomPlayer()
     }
 
     fun makeGuess(guess: Footballer) {

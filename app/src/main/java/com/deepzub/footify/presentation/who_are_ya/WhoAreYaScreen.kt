@@ -15,12 +15,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,8 +46,8 @@ import com.deepzub.footify.util.ShowToast
 import com.deepzub.footify.presentation.who_are_ya.components.FootballerItem
 import com.deepzub.footify.presentation.who_are_ya.components.GuessInputField
 import com.deepzub.footify.presentation.who_are_ya.components.GuessRowItem
+import com.deepzub.footify.presentation.who_are_ya.components.HelpDialog
 import com.deepzub.footify.presentation.who_are_ya.components.PlayerImage
-
 
 @Composable
 fun WhoAreYaScreen(
@@ -58,6 +62,7 @@ fun WhoAreYaScreen(
     var guessCount by remember { mutableStateOf(1) }
     var userQuery by remember { mutableStateOf("") }
     var isGameOver by remember { mutableStateOf(false) }
+    var showHelp by remember { mutableStateOf(false) }
 
     val isDataReady = footballerState.footballers.isNotEmpty()
             && !footballerState.isLoading
@@ -112,6 +117,39 @@ fun WhoAreYaScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    IconButton(
+                        onClick = {
+                            viewModel.resetGame()
+                            photoVisible = null
+                            userQuery = ""
+                            guessCount = 1
+                            isGameOver = false
+
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "New Footballer",
+                            tint = Color.Gray
+                        )
+                    }
+
+                    IconButton(onClick = { showHelp = true }) {
+                        Icon(
+                            imageVector = Icons.Default.HelpOutline,
+                            contentDescription = "Help",
+                            tint = Color.Gray
+                        )
+                    }
+                }
+
 
                 if (photoVisible == null) {
                     Text(
@@ -192,6 +230,11 @@ fun WhoAreYaScreen(
                     }
                 }
             }
+
+            if (showHelp) {
+                HelpDialog(onDismiss = { showHelp = false })
+            }
+
         }
     }
 }

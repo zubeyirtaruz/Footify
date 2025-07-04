@@ -83,8 +83,8 @@ fun getDisplayAgeText(attr: GuessAttribute): String {
 
     return if (isIncorrectAge && guessedAge != null && actualAge != null) {
         when {
-            guessedAge < actualAge -> "↑ $guessedAge"
-            guessedAge > actualAge -> "↓ $guessedAge"
+            guessedAge < actualAge -> "$guessedAge ↑ "
+            guessedAge > actualAge -> "$guessedAge ↓ "
             else -> guessedAge.toString()
         }
     } else {

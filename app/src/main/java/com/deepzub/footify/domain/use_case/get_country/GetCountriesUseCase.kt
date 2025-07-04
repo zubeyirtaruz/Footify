@@ -1,11 +1,11 @@
 package com.deepzub.footify.domain.use_case.get_country
 
-import coil.network.HttpException
 import com.deepzub.footify.domain.model.Country
 import com.deepzub.footify.domain.repository.FootballerRepository
 import com.deepzub.footify.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 

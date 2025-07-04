@@ -102,9 +102,9 @@ class WhoAreYaViewModel @Inject constructor(
         val leagues = listOf(
             Constants.PREMIER_LEAGUE_ID,
             Constants.BUNDESLIGA_ID,
-//            Constants.LA_LIGA_ID,
-//            Constants.LIGUE_1_ID,
-//            Constants.SERIE_A_ID
+            Constants.LA_LIGA_ID,
+            Constants.LIGUE_1_ID,
+            Constants.SERIE_A_ID
         )
 
         leagues.forEach { leagueId ->

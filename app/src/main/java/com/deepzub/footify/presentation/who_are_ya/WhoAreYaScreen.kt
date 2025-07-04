@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -77,18 +78,17 @@ fun WhoAreYaScreen(
         println(viewModel.currentPlayer.value?.name)
     }
 
-    // Doğru tahmin ya da 8 hak dolunca kontrol
     LaunchedEffect(guessCount, footballerState.guesses) {
         if (footballerState.guesses.isNotEmpty()) {
             val lastGuess = footballerState.guesses.last()
             val allCorrect = lastGuess.attributes.all { it?.isCorrect == true }
 
             if (allCorrect) {
-                println("Kazandın!")
-                isGameOver = true
+                isGameOver = true          // ➜ Kazandı
+                photoVisible = true        // ➜ Foto + isim göster
             } else if (guessCount > 8) {
-                println("Kaybettin!")
-                isGameOver = true
+                isGameOver = true          // ➜ Haklar bitti
+                photoVisible = true        // ➜ Foto + isim göster
             }
         }
     }
@@ -118,7 +118,6 @@ fun WhoAreYaScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -132,7 +131,6 @@ fun WhoAreYaScreen(
                             userQuery = ""
                             guessCount = 1
                             isGameOver = false
-
                         }
                     ) {
                         Icon(
@@ -152,7 +150,6 @@ fun WhoAreYaScreen(
                         )
                     }
                 }
-
 
                 if (photoVisible == null) {
                     Text(
@@ -175,29 +172,44 @@ fun WhoAreYaScreen(
                 if (photoVisible == true) {
                     currentPlayer?.photo?.takeIf { it.isNotBlank() }?.let { url ->
                         Spacer(Modifier.height(16.dp))
-                        PlayerImage(photoUrl = url, guessCount = guessCount)
+                        val blurGuess = if (isGameOver) 9 else guessCount   // 9 → calculateBlurLevel() 0 döndürsün
+                        PlayerImage(photoUrl = url, guessCount = blurGuess)
                     }
                 }
 
                 Spacer(Modifier.height(24.dp))
 
-                if (photoVisible != null ) {
-                    GuessInputField(
-                        query = userQuery,
-                        onQueryChange = { userQuery = it },
-                        placeholderText = "GUESS $guessCount OF 8",
-                        enabled = !isGameOver
-                    )
+                if (photoVisible != null) {
+                    if (isGameOver && currentPlayer != null) {
+                        Text(
+                            text = currentPlayer!!.name,
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        GuessInputField(
+                            query = userQuery,
+                            onQueryChange = { userQuery = it },
+                            placeholderText = "GUESS $guessCount OF 8",
+                            enabled = !isGameOver
+                        )
 
-                    if (userQuery.length >= 2 && !isGameOver) {
-                        val filtered = viewModel.searchFootballers(userQuery)
-                        LazyColumn {
-                            items(filtered) { player ->
-                                FootballerItem(player) {
-                                    if (!isGameOver) {
-                                        viewModel.makeGuess(player)
-                                        userQuery = ""
-                                        guessCount += 1
+                        if (userQuery.length >= 2) {
+                            val filtered = viewModel.searchFootballers(userQuery)
+                            LazyColumn {
+                                items(filtered) { player ->
+                                    FootballerItem(player) {
+                                        if (!isGameOver) {
+                                            viewModel.makeGuess(player)
+                                            userQuery = ""
+                                            guessCount += 1
+                                        }
                                     }
                                 }
                             }

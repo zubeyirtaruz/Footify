@@ -5,5 +5,5 @@ import com.deepzub.footify.domain.model.Footballer
 // Tek tahmin satırı
 data class GuessRow(
     val footballer: Footballer,
-    val attributes: List<GuessAttribute>
+    val attributes: List<GuessAttribute?>
 )

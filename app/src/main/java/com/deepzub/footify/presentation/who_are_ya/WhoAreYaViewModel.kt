@@ -2,6 +2,7 @@ package com.deepzub.footify.presentation.who_are_ya
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.deepzub.footify.domain.model.Country
 import com.deepzub.footify.domain.model.Footballer
 import com.deepzub.footify.domain.use_case.get_country.GetCountriesUseCase
 import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
@@ -76,22 +77,18 @@ class WhoAreYaViewModel @Inject constructor(
         getCountriesUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-
                     _countryState.value = _countryState.value.copy(
-                        countries = _countryState.value.countries,
+                        countries = result.data ?: emptyList(),
                         isLoading = false,
                         error = ""
                     )
                 }
-
                 is Resource.Error -> {
                     _countryState.value = _countryState.value.copy(
                         error = result.message ?: "Error",
                         isLoading = false
                     )
-                    println("Errors: ${result.message}")
                 }
-
                 is Resource.Loading -> {
                     _countryState.value = _countryState.value.copy(isLoading = true)
                 }
@@ -124,12 +121,26 @@ class WhoAreYaViewModel @Inject constructor(
         _currentPlayer.value = _footballerState.value.footballers.randomOrNull()
     }
 
+    private fun getFlagUrl(countries: List<Country>, nationality: String): String? {
+        return countries.find {
+            it.name.trim().equals(nationality.trim(), ignoreCase = true)
+        }?.flag
+    }
+
     // Yeni tahmin yap
     fun makeGuess(guess: Footballer) {
         val target = _currentPlayer.value ?: return
 
         val attrs = listOf(
-            GuessAttribute("NAT",  guess.nationality,  guess.nationality == target.nationality),
+            getFlagUrl(_countryState.value.countries, guess.nationality)?.let {
+                GuessAttribute(
+                    label = "NAT",
+                    value = it,
+                    isCorrect = guess.nationality == target.nationality,
+                    isImage = true
+                )
+            }
+            ,
             GuessAttribute("LEA", guess.leagueLogo, guess.leagueLogo == target.leagueLogo, isImage = true),
             GuessAttribute("TEAM", guess.teamLogo, guess.teamLogo == target.teamLogo, isImage = true),
             GuessAttribute(

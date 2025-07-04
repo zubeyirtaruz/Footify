@@ -56,16 +56,17 @@ fun WhoAreYaScreen(
     var photoVisible by remember { mutableStateOf<Boolean?>(null) }
     var guessCount by remember { mutableStateOf(1) }
     var userQuery by remember { mutableStateOf("") }
+    val isDataReady = footballerState.footballers.isNotEmpty() && !footballerState.isLoading && !countryState.isLoading && countryState.countries.isNotEmpty()
 
-    LaunchedEffect(footballerState.footballers) {
-        if (footballerState.footballers.isNotEmpty()) {
+    LaunchedEffect(isDataReady) {
+        if (isDataReady) {
             viewModel.pickRandomPlayer()
         }
         println(viewModel.currentPlayer.value?.name)
     }
 
     when {
-        footballerState.isLoading -> {
+        footballerState.isLoading || countryState.isLoading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -75,7 +76,11 @@ fun WhoAreYaScreen(
             ShowToast(footballerState.error)
         }
 
-        else -> {
+        countryState.error.isNotEmpty() -> {
+            ShowToast(countryState.error)
+        }
+
+        isDataReady -> {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

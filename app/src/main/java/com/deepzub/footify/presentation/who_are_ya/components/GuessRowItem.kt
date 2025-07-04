@@ -50,7 +50,9 @@ fun GuessRowItem(row: GuessRow) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 row.attributes.forEach { attr ->
-                    AttrBox(attr)
+                    if (attr != null) {
+                        AttrBox(attr)
+                    }
                 }
             }
         }

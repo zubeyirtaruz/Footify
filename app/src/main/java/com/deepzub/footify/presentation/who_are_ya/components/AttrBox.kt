@@ -17,12 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
 
 @Composable
@@ -41,7 +44,11 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
         ) {
             if (attr.isImage) {
                 AsyncImage(
-                    model = attr.value,
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(attr.value)
+                        .decoderFactory(SvgDecoder.Factory())
+                        .crossfade(true)
+                        .build(),
                     contentDescription = attr.label,
                     modifier = Modifier
                         .size(30.dp)

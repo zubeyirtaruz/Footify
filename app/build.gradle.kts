@@ -98,9 +98,12 @@ dependencies {
     implementation (libs.coil.compose)
     implementation(libs.coil.svg)
 
+    // Glide (for Blur)
+    implementation(libs.glide)
+    implementation(libs.glide.transformations)
+    kapt(libs.bumptech.glide.compiler)
+
     // Extra Icons
     implementation(libs.androidx.material.icons.extended)
-
-
 
 }

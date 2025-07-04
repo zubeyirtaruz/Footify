@@ -121,12 +121,6 @@ class WhoAreYaViewModel @Inject constructor(
         _currentPlayer.value = _footballerState.value.footballers.randomOrNull()
     }
 
-    private fun getFlagUrl(countries: List<Country>, nationality: String): String? {
-        return countries.find {
-            it.name.trim().equals(nationality.trim(), ignoreCase = true)
-        }?.flag
-    }
-
     fun makeGuess(guess: Footballer) {
         val target = _currentPlayer.value ?: return
 
@@ -138,28 +132,47 @@ class WhoAreYaViewModel @Inject constructor(
                     isCorrect = guess.nationality == target.nationality,
                     isImage = true
                 )
-            }
-            ,
-            GuessAttribute("LEA", guess.leagueLogo, guess.leagueLogo == target.leagueLogo, isImage = true),
-            GuessAttribute("TEAM", guess.teamLogo, guess.teamLogo == target.teamLogo, isImage = true),
+            },
             GuessAttribute(
-                "POS",
-                getPositionShortName(guess.position),
-                getPositionShortName(guess.position) == getPositionShortName(target.position)
+                label = "LEA",
+                value = guess.leagueLogo,
+                isCorrect = guess.leagueLogo == target.leagueLogo,
+                isImage = true
+            ),
+            GuessAttribute(
+                label = "TEAM",
+                value = guess.teamLogo,
+                isCorrect = guess.teamLogo == target.teamLogo,
+                isImage = true
+            ),
+            GuessAttribute(
+                label = "POS",
+                value = getPositionShortName(guess.position),
+                isCorrect = getPositionShortName(guess.position) == getPositionShortName(target.position)
             ),
             GuessAttribute(
                 label = "AGE",
                 value = guess.age.toString(),
                 isCorrect = guess.age == target.age,
                 correctValue = target.age.toString()
-            )
-//            GuessAttribute("SHIRT", guess.shirtNumber,  guess.shirtNumber == target.shirtNumber)
+            ),
+//            GuessAttribute(
+//                label = "SHIRT",
+//                value =  guess.shirtNumber,
+//                isCorrect = guess.shirtNumber == target.shirtNumber,
+//            )
         )
 
         val newRow = GuessRow(guess, attrs)
         _footballerState.value = _footballerState.value.copy(
             guesses = _footballerState.value.guesses + newRow
         )
+    }
+
+    private fun getFlagUrl(countries: List<Country>, nationality: String): String? {
+        return countries.find {
+            it.name.trim().equals(nationality.trim(), ignoreCase = true)
+        }?.flag
     }
 
 }

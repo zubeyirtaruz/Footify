@@ -129,7 +129,7 @@ fun WhoAreYaScreen(
                 if (photoVisible == true) {
                     currentPlayer?.photo?.takeIf { it.isNotBlank() }?.let { url ->
                         Spacer(Modifier.height(16.dp))
-                        PlayerImage(photoUrl = url)
+                        PlayerImage(photoUrl = url, guessCount = guessCount)
                     }
                 }
 
@@ -140,7 +140,7 @@ fun WhoAreYaScreen(
                         query = userQuery,
                         onQueryChange = { userQuery = it },
                         placeholderText = "GUESS $guessCount OF 8",
-                        enabled = !isGameOver // 👈 önemli
+                        enabled = !isGameOver
                     )
 
                     if (userQuery.length >= 2 && !isGameOver) {

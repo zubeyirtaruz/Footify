@@ -21,28 +21,22 @@ class FootballerRepositoryImpl @Inject constructor(
 
     override suspend fun getFootballers(league: Int, season: Int): List<Footballer> {
         val localFootballers = footballerDao.getAllFootballers().map { it.toDomain() }
-        println("Veriler Footballer DB den geldi")
 
         return localFootballers.ifEmpty {
             val remoteFootballers = fetchPlayersRecursively(league, season)
-            println("Veriler Footballer API dan geldi")
             footballerDao.insertFootballers(remoteFootballers.map { it.toEntity() })
             remoteFootballers
-
         }
     }
 
     override suspend fun getCountries(): List<Country> {
 
         val localCountries = countryDao.getAllCountries().map { it.toDomain() }
-        println("Veriler Country DB den geldi")
 
         return localCountries.ifEmpty {
             val remoteCountries = fetchCountries()
-            println("Veriler Country API dan geldi")
             countryDao.insertCountries(remoteCountries.map { it.toEntity() })
             remoteCountries
-
         }
     }
 

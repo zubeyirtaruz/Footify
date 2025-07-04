@@ -17,7 +17,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.deepzub.footify.presentation.football_games.components.GameListItem
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FootballGamesScreen(

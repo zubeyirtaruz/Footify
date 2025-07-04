@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.deepzub.footify.domain.model.Footballer
 
-
 @Composable
 fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
     Card(

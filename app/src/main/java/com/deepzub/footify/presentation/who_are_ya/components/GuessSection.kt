@@ -3,7 +3,7 @@ package com.deepzub.footify.presentation.who_are_ya.components
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import com.deepzub.footify.presentation.who_are_ya.WhoAreYaViewModel
+import com.deepzub.footify.domain.model.Footballer
 
 @Composable
 fun GuessSection(
@@ -11,8 +11,8 @@ fun GuessSection(
     onQueryChange: (String) -> Unit,
     placeholder: String,
     enabled: Boolean,
-    viewModel: WhoAreYaViewModel,
-    onGuessMade: () -> Unit
+    suggestions: List<Footballer>,
+    onGuessMade: (Footballer) -> Unit
 ) {
     GuessInputField(
         query = userQuery,
@@ -22,16 +22,15 @@ fun GuessSection(
     )
 
     if (enabled && userQuery.length >= 2) {
-        val filtered = viewModel
-            .searchFootballers(userQuery)
+        val filtered = suggestions
+            .filter { it.name.contains(userQuery, ignoreCase = true) }
             .distinctBy { it.id }
 
         if (filtered.isNotEmpty()) {
             LazyColumn {
-                items(filtered) { player ->
-                    FootballerItem(player) {
-                        viewModel.makeGuess(player)
-                        onGuessMade()
+                items(filtered) { footballer ->
+                    FootballerItem(footballer = footballer) {
+                        onGuessMade(footballer)
                     }
                 }
             }

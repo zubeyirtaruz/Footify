@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,55 +37,24 @@ fun WhoAreYaScreen(
     navController: NavController,
     viewModel: WhoAreYaViewModel = hiltViewModel()
 ) {
-    val footballerState by viewModel.footballerState.collectAsState()
-    val countryState by viewModel.countryState.collectAsState()
-    val currentPlayer by viewModel.currentPlayer.collectAsState()
+    val state by viewModel.ui.collectAsState()
 
-    var photoVisible by remember { mutableStateOf<Boolean?>(null) }
-    var guessCount by remember { mutableStateOf(1) }
     var userQuery by remember { mutableStateOf("") }
-    var isGameOver by remember { mutableStateOf(false) }
     var showHelp by remember { mutableStateOf(false) }
 
-    val isDataReady = footballerState.footballers.isNotEmpty()
-            && !footballerState.isLoading
-            && countryState.countries.isNotEmpty()
-            && !countryState.isLoading
-
-    // Oyuncu ilk defa yüklendiğinde
-    LaunchedEffect(isDataReady) {
-        if (isDataReady) {
-            viewModel.pickRandomPlayer()
-        }
-    }
-
-    // Doğru tahmin veya hak dolunca
-    LaunchedEffect(guessCount, footballerState.guesses) {
-        val lastGuess = footballerState.guesses.lastOrNull()
-        val isCorrect = lastGuess?.attributes?.all { it?.isCorrect == true } ?: false
-
-        if (isCorrect || guessCount > 8) {
-            isGameOver = true
-            photoVisible = true
-        }
-    }
-
     when {
-        footballerState.isLoading || countryState.isLoading -> {
+        state.isLoading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
 
-        footballerState.error.isNotEmpty() -> {
-            ShowToast(footballerState.error)
+        state.error != null -> {
+            ShowToast(state.error ?: "Unknown error")
         }
 
-        countryState.error.isNotEmpty() -> {
-            ShowToast(countryState.error)
-        }
-
-        isDataReady -> {
+        else -> {
+            println(state.player?.name)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -95,52 +63,50 @@ fun WhoAreYaScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
+
                 // Top Bar
                 WhoAreYaTopBar(
                     onResetClick = {
-                        viewModel.resetGame()
-                        photoVisible = null
+                        viewModel.onEvent(WhoAreYaEvent.ResetGame)
                         userQuery = ""
-                        guessCount = 1
-                        isGameOver = false
                     },
                     onHelpClick = { showHelp = true }
                 )
 
                 // Başlık
-                if (photoVisible == null) Big5Header()
+                if (state.photoVisible == null) {
+                    Big5Header()
+                }
 
                 // Fotoğraf veya soru işareti
                 PlayerSection(
-                    photoVisible = photoVisible,
-                    isGameOver = isGameOver,
-                    guessCount = guessCount,
-                    currentPlayer = currentPlayer
+                    photoVisible = state.photoVisible,
+                    isGameOver = state.isGameOver,
+                    guessCount = state.guessCount,
+                    currentPlayer = state.player
                 )
 
                 // Tahmin alanı
-                if (photoVisible != null) {
-                    if (!isGameOver) {
+                if (state.photoVisible != null) {
+                    if (!state.isGameOver) {
                         GuessSection(
                             userQuery = userQuery,
                             onQueryChange = { userQuery = it },
-                            placeholder = "GUESS $guessCount OF 8",
-                            enabled = !isGameOver,
-                            viewModel = viewModel,
-                            onGuessMade = {
+                            placeholder = "GUESS ${state.guessCount} OF 8",
+                            enabled = !state.isGameOver,
+                            suggestions = state.footballers,
+                            onGuessMade = { guess ->
                                 userQuery = ""
-                                guessCount += 1
+                                viewModel.onEvent(WhoAreYaEvent.MakeGuess(guess))
                             }
                         )
-                    } else {
-                        // Oyun bittiğinde isim gösterimi zaten PlayerSection'da
                     }
 
-                    // Yapılan tahminler
-                    if (footballerState.guesses.isNotEmpty()) {
+                    // Tahmin geçmişi
+                    if (state.guesses.isNotEmpty()) {
                         Spacer(Modifier.height(16.dp))
                         LazyColumn {
-                            items(footballerState.guesses) { row ->
+                            items(state.guesses) { row ->
                                 GuessRowItem(row)
                             }
                         }
@@ -148,11 +114,15 @@ fun WhoAreYaScreen(
                 }
 
                 // Başlangıçta fotoğrafı göster/gizle butonları
-                if (photoVisible == null) {
+                if (state.photoVisible == null) {
                     Spacer(Modifier.height(24.dp))
                     ActionButtons(
-                        onHideClick = { photoVisible = false },
-                        onShowClick = { photoVisible = true }
+                        onHideClick = {
+                            viewModel.onEvent(WhoAreYaEvent.TogglePhoto(false))
+                        },
+                        onShowClick = {
+                            viewModel.onEvent(WhoAreYaEvent.TogglePhoto(true))
+                        }
                     )
                 }
             }

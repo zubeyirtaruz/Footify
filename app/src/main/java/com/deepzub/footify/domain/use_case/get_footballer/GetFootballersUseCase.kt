@@ -1,7 +1,7 @@
-package com.deepzub.footify.domain.use_case.get_player
+package com.deepzub.footify.domain.use_case.get_footballer
 
 import com.deepzub.footify.domain.model.Footballer
-import com.deepzub.footify.domain.repository.FootballerRepository
+import com.deepzub.footify.domain.repository.WhoAreYaRepository
 import com.deepzub.footify.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -10,7 +10,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class GetFootballersUseCase @Inject constructor(
-    private val repository: FootballerRepository
+    private val repository: WhoAreYaRepository
 ) {
     operator fun invoke(
         league: Int,

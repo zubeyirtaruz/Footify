@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import com.deepzub.footify.data.remote.CountryAPI
 import com.deepzub.footify.data.remote.PlayerAPI
-import com.deepzub.footify.data.repository.FootballerRepositoryImpl
+import com.deepzub.footify.data.repository.WhoAreYaRepositoryImpl
 import com.deepzub.footify.data.room.AppDatabase
 import com.deepzub.footify.data.room.CountryDao
 import com.deepzub.footify.data.room.FootballerDao
-import com.deepzub.footify.domain.repository.FootballerRepository
+import com.deepzub.footify.domain.repository.WhoAreYaRepository
 import com.deepzub.footify.util.Constants
 import dagger.Module
 import dagger.Provides
@@ -57,13 +57,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFootballerRepository(
+    fun provideWhoAreYaRepository(
         playerAPI: PlayerAPI,
         countryAPI: CountryAPI,
         footballerDao: FootballerDao,
         countryDao: CountryDao
-    ): FootballerRepository {
-        return FootballerRepositoryImpl(playerAPI,countryAPI,footballerDao,countryDao)
+    ): WhoAreYaRepository {
+        return WhoAreYaRepositoryImpl(playerAPI,countryAPI,footballerDao,countryDao)
     }
 
     @Provides

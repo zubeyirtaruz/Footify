@@ -1,7 +1,7 @@
 package com.deepzub.footify.domain.use_case.get_country
 
 import com.deepzub.footify.domain.model.Country
-import com.deepzub.footify.domain.repository.FootballerRepository
+import com.deepzub.footify.domain.repository.WhoAreYaRepository
 import com.deepzub.footify.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -10,7 +10,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class GetCountriesUseCase @Inject constructor(
-    private val repository: FootballerRepository
+    private val repository: WhoAreYaRepository
 ) {
     operator fun invoke(
     ): Flow<Resource<List<Country>>> = flow {

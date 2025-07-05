@@ -8,16 +8,16 @@ import com.deepzub.footify.data.room.CountryDao
 import com.deepzub.footify.data.room.FootballerDao
 import com.deepzub.footify.domain.model.Country
 import com.deepzub.footify.domain.model.Footballer
-import com.deepzub.footify.domain.repository.FootballerRepository
+import com.deepzub.footify.domain.repository.WhoAreYaRepository
 import javax.inject.Inject
 
-class FootballerRepositoryImpl @Inject constructor(
+class WhoAreYaRepositoryImpl @Inject constructor(
     private val playerAPI: PlayerAPI,
     private val countryAPI: CountryAPI,
     private val footballerDao: FootballerDao,
     private val countryDao: CountryDao
 
-) : FootballerRepository {
+) : WhoAreYaRepository {
 
     override suspend fun getFootballers(league: Int, season: Int): List<Footballer> {
         val localFootballers = footballerDao.getAllFootballers().map { it.toDomain() }

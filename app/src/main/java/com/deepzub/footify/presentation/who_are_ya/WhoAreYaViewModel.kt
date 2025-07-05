@@ -7,7 +7,7 @@ import com.deepzub.footify.domain.model.Footballer
 import com.deepzub.footify.domain.use_case.get_country.GetCountriesUseCase
 import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
 import com.deepzub.footify.presentation.who_are_ya.model.GuessRow
-import com.deepzub.footify.domain.use_case.get_player.GetFootballersUseCase
+import com.deepzub.footify.domain.use_case.get_footballer.GetFootballersUseCase
 import com.deepzub.footify.presentation.who_are_ya.components.getPositionShortName
 import com.deepzub.footify.presentation.who_are_ya.model.AttributeType
 import com.deepzub.footify.util.Constants

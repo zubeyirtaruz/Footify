@@ -54,12 +54,12 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
                         .crossfade(true)
                         .build(),
                     contentDescription = attr.label,
-                    modifier = Modifier.size(30.dp).clip(CircleShape),
+                    modifier = Modifier.size(40.dp).clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             } else {
                 Text(
-                    text = getDisplayAgeText(attr),
+                    text = getDisplayAttrValue(attr),
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     color = Color.Black,
@@ -79,18 +79,16 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
     }
 }
 
-fun getDisplayAgeText(attr: GuessAttribute): String {
-    val isIncorrectAge = attr.type == AttributeType.AGE && !attr.isCorrect
+fun getDisplayAttrValue(attr: GuessAttribute): String {
+    val arrowTypes = setOf(AttributeType.AGE, AttributeType.SHIRT)
     val guessed = attr.value.toIntOrNull()
-    val actual = attr.correctValue?.toIntOrNull()
+    val actual  = attr.correctValue?.toIntOrNull()
 
-    return if (isIncorrectAge && guessed != null && actual != null) {
+    return if (attr.type in arrowTypes && guessed != null && actual != null) {
         when {
             guessed < actual -> "$guessed↑"
             guessed > actual -> "$guessed↓"
-            else -> guessed.toString()
+            else             -> guessed.toString()
         }
-    } else {
-        attr.value
-    }
+    } else attr.value
 }

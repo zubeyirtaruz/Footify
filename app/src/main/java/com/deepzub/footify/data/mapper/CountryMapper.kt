@@ -1,6 +1,6 @@
 package com.deepzub.footify.data.mapper
 
-import com.deepzub.footify.data.remote.dto.ResponseCountry
+import com.deepzub.footify.data.remote.dto.country.ResponseCountry
 import com.deepzub.footify.data.room.CountryEntity
 import com.deepzub.footify.domain.model.Country
 

@@ -69,7 +69,7 @@ fun HelpDialog(onDismiss: () -> Unit) {
                 ExampleGuessRow()
                 Spacer(Modifier.height(8.dp))
 
-                Bullet("… Means that the mystery player is Portuguese, does not play in the Premier League and does not play for Manchester United. However, the player is a midfielder and they are under the age of 30 whilst having a higher shirt number than #8.")
+                Bullet("… Means that the mystery player is Portuguese, does not play in the Premier League and does not play for Manchester United. However, the player is a midfielder and they are under the age of 30 whilst having a higher shirt number than 8.")
                 Bullet("You can also change the player by clicking refresh icon on the top left.")
 
                 Spacer(Modifier.height(16.dp))

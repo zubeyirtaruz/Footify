@@ -1,10 +1,12 @@
 package com.deepzub.footify.data.mapper
 
-import com.deepzub.footify.data.remote.dto.Response
+import com.deepzub.footify.data.remote.dto.oneplayer.ResponseOnePlayer
+import com.deepzub.footify.data.remote.dto.players.ResponsePlayers
 import com.deepzub.footify.data.room.FootballerEntity
 import com.deepzub.footify.domain.model.Footballer
+import com.deepzub.footify.domain.model.OnePlayer
 
-fun Response.toDomain(): Footballer {
+fun ResponsePlayers.toDomain(): Footballer {
     return Footballer(
         id = player.id,
         name = player.name,
@@ -16,6 +18,13 @@ fun Response.toDomain(): Footballer {
         position = statistics.firstOrNull()?.games?.position ?: "",
         leagueLogo = statistics.firstOrNull()?.league?.logo ?: "",
         shirtNumber = statistics.firstOrNull()?.games?.number?.toString() ?: ""
+    )
+}
+
+fun ResponseOnePlayer.toDomain(): OnePlayer {
+    return OnePlayer(
+        id = player.id,
+        shirtNumber = player.number
     )
 }
 

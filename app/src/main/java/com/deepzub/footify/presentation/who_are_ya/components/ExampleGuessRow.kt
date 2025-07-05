@@ -19,7 +19,7 @@ fun ExampleGuessRow() {
         GuessAttribute(type = AttributeType.TEAM, "https://media.api-sports.io/football/teams/33.png", isCorrect = false, isImage = true),
         GuessAttribute(type = AttributeType.POSITION, "MF", isCorrect = true),
         GuessAttribute(type = AttributeType.AGE, "30↓", isCorrect = false),
-        GuessAttribute(type = AttributeType.SHIRT, "#8↑", isCorrect = false)
+        GuessAttribute(type = AttributeType.SHIRT, "8↑", isCorrect = false)
     )
 
     Row(

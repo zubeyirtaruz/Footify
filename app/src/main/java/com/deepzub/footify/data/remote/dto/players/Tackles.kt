@@ -1,4 +1,4 @@
-package com.deepzub.footify.data.remote.dto
+package com.deepzub.footify.data.remote.dto.players
 
 data class Tackles(
     val blocks: Any,

@@ -8,6 +8,7 @@ import com.deepzub.footify.data.room.CountryDao
 import com.deepzub.footify.data.room.FootballerDao
 import com.deepzub.footify.domain.model.Country
 import com.deepzub.footify.domain.model.Footballer
+import com.deepzub.footify.domain.model.OnePlayer
 import com.deepzub.footify.domain.repository.WhoAreYaRepository
 import javax.inject.Inject
 
@@ -27,6 +28,12 @@ class WhoAreYaRepositoryImpl @Inject constructor(
             footballerDao.insertFootballers(remoteFootballers.map { it.toEntity() })
             remoteFootballers
         }
+    }
+
+    override suspend fun getPlayerById(id: Int): List<OnePlayer> {
+        val response = playerAPI.getPlayerById(id)
+        val onePlayer = response.response.map { it.toDomain() }
+        return onePlayer
     }
 
     override suspend fun getCountries(): List<Country> {

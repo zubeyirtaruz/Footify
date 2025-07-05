@@ -51,11 +51,14 @@ fun GuessRowItem(row: GuessRow) {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 row.attributes.forEach { attr ->
                     attr?.let {
-                        AttrBox(it)
+                        AttrBox(
+                            attr = it,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
             }

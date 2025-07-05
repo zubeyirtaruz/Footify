@@ -8,6 +8,7 @@ import com.deepzub.footify.domain.use_case.get_country.GetCountriesUseCase
 import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
 import com.deepzub.footify.presentation.who_are_ya.model.GuessRow
 import com.deepzub.footify.domain.use_case.get_footballer.GetFootballersUseCase
+import com.deepzub.footify.domain.use_case.get_one_player.GetOnePlayerUseCase
 import com.deepzub.footify.presentation.who_are_ya.components.getPositionShortName
 import com.deepzub.footify.presentation.who_are_ya.model.AttributeType
 import com.deepzub.footify.util.Constants
@@ -26,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WhoAreYaViewModel @Inject constructor(
     private val getFootballers: GetFootballersUseCase,
-    private val getCountries: GetCountriesUseCase
+    private val getCountries: GetCountriesUseCase,
+    private val getOnePlayer: GetOnePlayerUseCase
 ) : ViewModel() {
 
     /* ------------------------- STATE ------------------------- */
@@ -93,14 +95,32 @@ class WhoAreYaViewModel @Inject constructor(
         viewModelScope.launch {
             ui.collect { state ->
                 if (state.footballers.isNotEmpty() && state.countries.isNotEmpty()) {
-                    _ui.update { it.copy(
-                        isLoading = false,
-                        player = state.player ?: state.footballers.random()
-                    ) }
-                    cancel() // bir kez yeter
+                    _ui.update { it.copy(isLoading = false) }
+                    pickRandomPlayer()
+                    cancel()
                 }
             }
         }
+    }
+
+    /** Rastgele bir oyuncu seçer ve forma numarasını API’den çeker */
+    private fun pickRandomPlayer() {
+        val random = _ui.value.footballers.randomOrNull()
+        _ui.update { it.copy(player = random) }
+        random?.id?.let { fetchShirtNumber(it) }
+    }
+
+    private fun fetchShirtNumber(playerId: Int) {
+        getOnePlayer(playerId).onEach { res ->
+            if (res is Resource.Success && res.data?.isNotEmpty() == true) {
+                val shirt = res.data.first().shirtNumber
+                _ui.update { state ->
+                    state.copy(
+                        player = state.player?.copy(shirtNumber = shirt.toString())
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     /* ---------------------- RESET GAME ----------------------- */
@@ -109,28 +129,43 @@ class WhoAreYaViewModel @Inject constructor(
             guesses      = emptyList(),
             guessCount   = 1,
             isGameOver   = false,
-            photoVisible = null,
-            player       = it.footballers.randomOrNull()
+            photoVisible = null
         )
+    }.also {
+        pickRandomPlayer()
     }
 
     /* ---------------------- MAKE GUESS ----------------------- */
     private fun handleGuess(guess: Footballer) {
-        val state  = _ui.value
+        val state = _ui.value
         val target = state.player ?: return
 
-        val attrs = buildAttributes(guess, target, state.countries)
+        // Eğer guess.shirtNumber boşsa, API'den çek
+        if (guess.shirtNumber.isEmpty()) {
+            viewModelScope.launch {
+                getOnePlayer(guess.id).collect { res ->
+                    if (res is Resource.Success && res.data?.isNotEmpty() == true) {
+                        val updatedGuess = guess.copy(shirtNumber = res.data.first().shirtNumber.toString())
+                        applyGuess(updatedGuess, target, state.countries)
+                    }
+                }
+            }
+        } else {
+            applyGuess(guess, target, state.countries)
+        }
+    }
 
-        val newRow     = GuessRow(guess, attrs)
-        val newCount   = state.guessCount + 1
-        val allCorrect = attrs.all { it?.isCorrect == true }
-        val gameOver   = allCorrect || newCount > 8
+    private fun applyGuess(guess: Footballer, target: Footballer, countries: List<Country>) {
+        val attrs = buildAttributes(guess, target, countries)
+        val newRow = GuessRow(guess, attrs)
+        val newCount = _ui.value.guessCount + 1
+        val gameOver = attrs.all { it?.isCorrect == true } || newCount > 8
 
         _ui.update {
             it.copy(
-                guesses      = it.guesses + newRow,
-                guessCount   = newCount,
-                isGameOver   = gameOver,
+                guesses = it.guesses + newRow,
+                guessCount = newCount,
+                isGameOver = gameOver,
                 photoVisible = if (gameOver) true else it.photoVisible
             )
         }
@@ -170,11 +205,11 @@ class WhoAreYaViewModel @Inject constructor(
             isCorrect = guess.age == target.age,
             correctValue = target.age.toString()
         ),
-//        GuessAttribute(
-//            type = AttributeType.SHIRT,
-//            value = guess.shirtNumber,
-//            isCorrect = guess.shirtNumber == target.shirtNumber,
-//            correctValue = target.shirtNumber
-//        )
+        GuessAttribute(
+            type = AttributeType.SHIRT,
+            value = guess.shirtNumber,
+            isCorrect = guess.shirtNumber == target.shirtNumber,
+            correctValue = target.shirtNumber
+        )
     )
 }

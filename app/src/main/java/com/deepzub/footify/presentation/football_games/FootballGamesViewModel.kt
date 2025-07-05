@@ -1,13 +1,14 @@
 package com.deepzub.footify.presentation.football_games
 
 import androidx.lifecycle.ViewModel
+import com.deepzub.footify.R
 import com.deepzub.footify.presentation.football_games.model.GameItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class FootballGamesViewModel : ViewModel() {
 
-    private val _games = MutableStateFlow<List<GameItem>>(emptyList())
+    private val _games = MutableStateFlow(emptyList<GameItem>())
     val games: StateFlow<List<GameItem>> = _games
 
     init {
@@ -16,15 +17,15 @@ class FootballGamesViewModel : ViewModel() {
 
     private fun loadGames() {
         _games.value = listOf(
-            GameItem(id = 1, name = "Who Are Ya?"),
-            GameItem(id = 2, name = "Pack 11"),
-            GameItem(id = 3, name = "Football Connections"),
-            GameItem(id = 4, name = "Football Bingo"),
-            GameItem(id = 5, name = "Career Path Challenge"),
-            GameItem(id = 6, name = "SuperDraft Soccer"),
-            GameItem(id = 7, name = "Guess the Football Club"),
-            GameItem(id = 8, name = "Football Wordle"),
-            GameItem(id = 9, name = "BOX2BOX")
+            GameItem(id = 1, name = "Who Are Ya?", imageRes = R.drawable.who_are_ya),
+            GameItem(id = 2, name = "Pack 11", upComing = true, imageRes = R.drawable.pack11),
+            GameItem(id = 3, name = "Football Connections", upComing = true, imageRes = R.drawable.connections),
+            GameItem(id = 4, name = "Football Bingo", upComing = true, imageRes = R.drawable.bingo),
+            GameItem(id = 5, name = "Career Path Challenge", upComing = true, imageRes = R.drawable.career_path),
+            GameItem(id = 6, name = "SuperDraft Soccer", upComing = true, imageRes = R.drawable.superdraft),
+            GameItem(id = 7, name = "Guess the Football Club", upComing = true, imageRes = R.drawable.guess_club),
+            GameItem(id = 8, name = "Football Wordle", upComing = true, imageRes = R.drawable.wordle),
+            GameItem(id = 9, name = "BOX2BOX", upComing = true, imageRes = R.drawable.box2box)
         )
     }
 }

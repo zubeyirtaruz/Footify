@@ -1,7 +1,6 @@
-package com.deepzub.footify.domain.model
+package com.deepzub.footify.presentation.navigation
 
 enum class ScreenName(val id: Int) {
-
     WhoAreYa(1),
     Pack11(2),
     FootballConnections(3),
@@ -10,5 +9,5 @@ enum class ScreenName(val id: Int) {
     SuperDraftSoccer(6),
     GuesstheFootballClub(7),
     FootballWordle(8),
-    BOX2BOX(9),
+    BOX2BOX(9);
 }

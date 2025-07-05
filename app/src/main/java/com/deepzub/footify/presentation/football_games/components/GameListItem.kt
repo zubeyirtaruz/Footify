@@ -19,10 +19,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.deepzub.footify.R
 import com.deepzub.footify.presentation.football_games.model.GameItem
 
 @Composable
@@ -37,7 +39,9 @@ fun GameListItem(
             .clickable(enabled = !game.upComing) {
                 if (!game.upComing) onClick()
             },
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C1A4C))
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.game_card_background)
+        )
     ) {
         Row(
             modifier = Modifier
@@ -71,7 +75,7 @@ fun GameListItem(
                 if (game.upComing) {
                     LabelChip(
                         text = "Upcoming",
-                        color = Color(0xFF5E60CE)
+                        color = colorResource(id = R.color.game_label_chip)
                     )
                 }
             }

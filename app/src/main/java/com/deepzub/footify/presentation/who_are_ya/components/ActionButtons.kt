@@ -13,8 +13,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.deepzub.footify.R
 
 @Composable
 fun ActionButtons(
@@ -24,7 +25,9 @@ fun ActionButtons(
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         Button(
             onClick = onHideClick,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.primary_button_bg)
+            )
         ) {
             Icon(Icons.Default.VisibilityOff, contentDescription = "Hide")
             Spacer(Modifier.width(8.dp))
@@ -33,7 +36,9 @@ fun ActionButtons(
 
         Button(
             onClick = onShowClick,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF635BFF))
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.primary_button_bg)
+            )
         ) {
             Icon(Icons.Default.Visibility, contentDescription = "Show")
             Spacer(Modifier.width(8.dp))

@@ -16,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.deepzub.footify.R
 
 @Composable
 fun HelpDialog(onDismiss: () -> Unit) {
@@ -30,7 +32,7 @@ fun HelpDialog(onDismiss: () -> Unit) {
                 .wrapContentHeight()
                 .padding(24.dp),
             shape = RoundedCornerShape(16.dp),
-            color = Color(0xFF1B0832)
+            color = colorResource(id = R.color.help_dialog_bg)
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -52,7 +54,8 @@ fun HelpDialog(onDismiss: () -> Unit) {
                         verticalAlignment = Alignment.Top,
                         modifier = Modifier.padding(vertical = 2.dp)
                     ) {
-                        Text("•  ", color = Color(0xFFCBFF00))
+
+                        Text("•  ", color = colorResource(id = R.color.bullet_color))
                         Text(text, color = Color.White, style = MaterialTheme.typography.bodySmall)
                     }
                 }

@@ -22,9 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.deepzub.footify.R
 import com.deepzub.footify.domain.model.Footballer
 
 @Composable
@@ -35,7 +37,9 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp)
             .clip(RoundedCornerShape(16.dp)),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9)),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.card_light_bg)
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -60,7 +64,7 @@ fun FootballerItem(footballer: Footballer, onClick: () -> Unit) {
                 Text(
                     text = footballer.name,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF1B1B1B)
+                    color = colorResource(id = R.color.text_primary_dark)
                 )
                 Text(
                     text = footballer.teamName,
@@ -79,13 +83,13 @@ private fun PositionTag(position: String) {
     Box(
         modifier = Modifier
             .clip(CircleShape)
-            .background(Color(0xFFE0E0E0))
+            .background(colorResource(id = R.color.attr_neutral_bg))
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
             text = getPositionShortName(position),
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            color = Color(0xFF424242)
+            color = colorResource(id = R.color.text_secondary_dark)
         )
     }
 }

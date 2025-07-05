@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.deepzub.footify.R
 import com.deepzub.footify.presentation.who_are_ya.model.AttributeType
 import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
 
@@ -32,7 +34,10 @@ fun AttrBox(attr: GuessAttribute, modifier: Modifier = Modifier) {
         modifier = modifier.width(60.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val bgColor = if (attr.isCorrect) Color(0xFF4CAF50) else Color(0xFFE0E0E0)
+        val bgColor = if (attr.isCorrect)
+            colorResource(id = R.color.attr_correct_bg)
+        else
+            colorResource(id = R.color.attr_neutral_bg)
 
         Box(
             modifier = Modifier

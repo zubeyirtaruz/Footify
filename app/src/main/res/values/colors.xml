@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +8,24 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!--   FootballGames Components   -->
+
+    <color name="game_card_background">#2C1A4C</color>
+    <color name="game_label_chip">#5E60CE</color>
+    <color name="games_topbar_title">#2C1A4C</color>
+    <color name="games_topbar_bg">#F1F1F1</color>
+
+    <!--   WhoAreYa Components   -->
+
+    <color name="primary_button_bg">#3D2B64</color>
+    <color name="attr_correct_bg">#4CAF50</color>
+    <color name="attr_neutral_bg">#E0E0E0</color>
+    <color name="guess_row_bg">#E3F2FD</color>
+    <color name="card_light_bg">#F9F9F9</color>
+    <color name="help_dialog_bg">#1B0832</color>
+    <color name="bullet_color">#CBFF00</color>
+    <color name="text_primary_dark">#1B1B1B</color>
+    <color name="text_secondary_dark">#424242</color>
+
 </resources>

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.deepzub.footify.presentation.football_games.FootballGamesScreen
+import com.deepzub.footify.presentation.football_wordle.FootballWordleScreen
 import com.deepzub.footify.presentation.who_are_ya.WhoAreYaScreen
 
 @Composable
@@ -24,6 +25,7 @@ fun AppNavGraph(navController: NavHostController) {
             val gameId = backStackEntry.arguments?.getInt("gameId")
             when (gameId) {
                 ScreenName.WhoAreYa.id -> WhoAreYaScreen(navController)
+                ScreenName.FootballWordle.id -> FootballWordleScreen(navController)
                 else -> {
                     println("Unknown gameId: $gameId")
                 }

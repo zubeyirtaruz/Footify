@@ -28,4 +28,11 @@
     <color name="text_primary_dark">#1B1B1B</color>
     <color name="text_secondary_dark">#424242</color>
 
+    <!--   FootballWordle Components   -->
+
+    <color name="green_correct">#00C853</color>
+    <color name="yellow_misplaced">#FFC107</color>
+    <color name="gray_wrong">#424242</color>
+    <color name="screen_bg">#1B0832</color>
+
 </resources>

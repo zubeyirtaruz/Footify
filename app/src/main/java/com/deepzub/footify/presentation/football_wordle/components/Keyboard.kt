@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.deepzub.footify.presentation.football_wordle.model.LetterStatus
 
 @Composable
 fun Keyboard(
+    letterStat: Map<Char, LetterStatus>,
     onKey: (Char) -> Unit,
     onDelete: () -> Unit,
     onEnter: () -> Unit
@@ -21,7 +23,8 @@ fun Keyboard(
         "QWERTYUIOP",
         "ASDFGHJKL"
     )
-    // İlk iki satır orijinal gibi
+
+    // İlk iki satır
     rows.forEach { row ->
         Row(
             modifier = Modifier
@@ -30,13 +33,16 @@ fun Keyboard(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             row.forEach { c ->
-                Key(c.toString(), modifier = Modifier.weight(1f)) { onKey(c) }
+                val stat = letterStat[c] ?: LetterStatus.EMPTY
+                Key(label = c.toString(), status = stat, modifier = Modifier.weight(1f)) {
+                    onKey(c)
+                }
             }
         }
         Spacer(Modifier.height(6.dp))
     }
 
-    // Alt satır: ZXC... + Delete + Enter tuşları
+    // Üçüncü satır (alt sıra)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,13 +51,15 @@ fun Keyboard(
     ) {
         Key("Delete", modifier = Modifier.weight(1.5f)) { onDelete() }
         Spacer(modifier = Modifier.width(1.dp))
-        Key("Z", modifier = Modifier.weight(1f)) { onKey('Z') }
-        Key("X", modifier = Modifier.weight(1f)) { onKey('X') }
-        Key("C", modifier = Modifier.weight(1f)) { onKey('C') }
-        Key("V", modifier = Modifier.weight(1f)) { onKey('V') }
-        Key("B", modifier = Modifier.weight(1f)) { onKey('B') }
-        Key("N", modifier = Modifier.weight(1f)) { onKey('N') }
-        Key("M", modifier = Modifier.weight(1f)) { onKey('M') }
+
+        val thirdRowLetters = listOf('Z', 'X', 'C', 'V', 'B', 'N', 'M')
+        thirdRowLetters.forEach { c ->
+            val stat = letterStat[c] ?: LetterStatus.EMPTY
+            Key(label = c.toString(), status = stat, modifier = Modifier.weight(1f)) {
+                onKey(c)
+            }
+        }
+
         Spacer(modifier = Modifier.width(1.dp))
         Key("Enter", modifier = Modifier.weight(1.5f)) { onEnter() }
     }

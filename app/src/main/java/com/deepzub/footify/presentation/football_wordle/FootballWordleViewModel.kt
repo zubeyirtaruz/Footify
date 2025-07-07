@@ -1,7 +1,7 @@
 package com.deepzub.footify.presentation.football_wordle
 
 import androidx.lifecycle.ViewModel
-import com.deepzub.footify.presentation.football_wordle.model.FOOTBALL_WORDS
+import com.deepzub.footify.presentation.football_wordle.model.FOOTBALLER_NAME_LIST
 import com.deepzub.footify.presentation.football_wordle.model.LetterStatus
 import com.deepzub.footify.presentation.football_wordle.model.TileState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,18 +13,15 @@ import javax.inject.Inject
 @HiltViewModel
 class FootballWordleViewModel @Inject constructor() : ViewModel() {
 
-    private val _ui = MutableStateFlow(WordleUiState())
+    private lateinit var secret: String
+
+    private val _ui = MutableStateFlow(WordleUiState(board = emptyList()))
     val ui: StateFlow<WordleUiState> = _ui
 
-    private var secret = FOOTBALL_WORDS.random()
+    private val MAX_ROWS = 6
 
     init {
-        pickSecretWord()
-    }
-
-    private fun pickSecretWord() {
-        secret = FOOTBALL_WORDS.random()
-        println("Footballer: $secret")
+        reset()
     }
 
     fun onEvent(evt: WordleEvent) = when (evt) {
@@ -35,12 +32,17 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
     }
 
     /* ---------------- internal helpers ---------------- */
+
+    private fun createBoard(length: Int): List<List<TileState>> =
+        List(6) { List(length) { TileState() } }
+
     private fun addLetter(c: Char) = _ui.update { s ->
-        if (s.currentCol >= 5 || s.gameOver) s
+        if (s.currentCol >= secret.length || s.gameOver) s
         else {
-            val row  = s.currentRow
-            val col  = s.currentCol
-            val newB = s.board.mapIndexed { r, rowList: List<TileState> ->
+            val row = s.currentRow
+            val col = s.currentCol
+
+            val newB = s.board.mapIndexed { r, rowList ->
                 if (r != row) rowList
                 else {
                     val newRow = rowList.toMutableList()
@@ -74,13 +76,9 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
     private fun checkWord() {
 
         _ui.update { s ->
-            if (s.currentCol < 5 || s.gameOver) return@update s
+            if (s.currentCol < secret.length || s.gameOver) return@update s
 
             val guess = s.board[s.currentRow].joinToString("") { it.letter.toString() }
-
-            if (guess !in FOOTBALL_WORDS) {
-                return@update s.copy(message = "Not in list")
-            }
 
             val statusRow = guess.mapIndexed { i, c ->
                 when {
@@ -97,24 +95,50 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
                 }
             }
 
-            val finished = (guess == secret) || s.currentRow == 5
+            val finished = (guess == secret) || s.currentRow == MAX_ROWS - 1
+
+            val newLetterStat = s.letterStat.toMutableMap()
+
+            guess.forEachIndexed { i, ch ->
+                val newStatus = statusRow[i]
+                val oldStatus = newLetterStat[ch]
+                if (newStatus.isStrongerThan(oldStatus)) {
+                    newLetterStat[ch] = newStatus
+                }
+            }
 
             s.copy(
                 board = newB,
                 currentRow = s.currentRow + 1,
                 currentCol = 0,
                 gameOver = finished,
-                message = if (finished) "Answer: $secret" else null
+                message = if (finished) secret else null,
+                letterStat  = newLetterStat
             )
         }
     }
 
-    private fun reset() {
-        val newSecret = FOOTBALL_WORDS.random()
-        println("New Footballer: $newSecret")
-        secret = newSecret
+    private fun LetterStatus.isStrongerThan(other: LetterStatus?): Boolean {
+        return when (this) {
+            LetterStatus.CORRECT  -> other != LetterStatus.CORRECT
+            LetterStatus.PRESENT  -> other == null || other == LetterStatus.EMPTY || other == LetterStatus.ABSENT
+            LetterStatus.ABSENT   -> other == null || other == LetterStatus.EMPTY
+            LetterStatus.EMPTY    -> false
+        }
+    }
 
-        _ui.value = WordleUiState()
+    private fun reset() {
+        secret = FOOTBALLER_NAME_LIST.random()
+        println("New Footballer: $secret")
+
+        _ui.value = WordleUiState(
+            board = createBoard(secret.length),
+            letterStat  = emptyMap(),
+            currentRow = 0,
+            currentCol = 0,
+            gameOver   = false,
+            message    = null
+        )
     }
 
 }

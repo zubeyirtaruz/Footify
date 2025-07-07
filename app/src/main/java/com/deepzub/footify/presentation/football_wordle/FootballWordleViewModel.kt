@@ -1,7 +1,8 @@
 package com.deepzub.footify.presentation.football_wordle
 
 import androidx.lifecycle.ViewModel
-import com.deepzub.footify.presentation.football_wordle.model.FOOTBALLER_NAME_LIST
+import com.deepzub.footify.presentation.football_wordle.model.FOOTBALLER_LIST
+import com.deepzub.footify.presentation.football_wordle.model.FootballerInfo
 import com.deepzub.footify.presentation.football_wordle.model.LetterStatus
 import com.deepzub.footify.presentation.football_wordle.model.TileState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FootballWordleViewModel @Inject constructor() : ViewModel() {
 
-    private lateinit var secret: String
+    private lateinit var secret: FootballerInfo
 
     private val _ui = MutableStateFlow(WordleUiState(board = emptyList()))
     val ui: StateFlow<WordleUiState> = _ui
@@ -37,7 +38,7 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
         List(6) { List(length) { TileState() } }
 
     private fun addLetter(c: Char) = _ui.update { s ->
-        if (s.currentCol >= secret.length || s.gameOver) s
+        if (s.currentCol >= secret.name.length || s.gameOver) s
         else {
             val row = s.currentRow
             val col = s.currentCol
@@ -76,14 +77,14 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
     private fun checkWord() {
 
         _ui.update { s ->
-            if (s.currentCol < secret.length || s.gameOver) return@update s
+            if (s.currentCol < secret.name.length || s.gameOver) return@update s
 
             val guess = s.board[s.currentRow].joinToString("") { it.letter.toString() }
 
             val statusRow = guess.mapIndexed { i, c ->
                 when {
-                    c == secret[i] -> LetterStatus.CORRECT
-                    c in secret    -> LetterStatus.PRESENT
+                    c == secret.name[i] -> LetterStatus.CORRECT
+                    c in secret.name    -> LetterStatus.PRESENT
                     else           -> LetterStatus.ABSENT
                 }
             }
@@ -95,7 +96,7 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
                 }
             }
 
-            val finished = (guess == secret) || s.currentRow == MAX_ROWS - 1
+            val finished = (guess == secret.name) || s.currentRow == MAX_ROWS - 1
 
             val newLetterStat = s.letterStat.toMutableMap()
 
@@ -112,7 +113,7 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
                 currentRow = s.currentRow + 1,
                 currentCol = 0,
                 gameOver = finished,
-                message = if (finished) secret else null,
+                message = if (finished) secret.name else null,
                 letterStat  = newLetterStat
             )
         }
@@ -128,16 +129,21 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun reset() {
-        secret = FOOTBALLER_NAME_LIST.random()
-        println("New Footballer: $secret")
+        secret = FOOTBALLER_LIST.random()
+        println("New Footballer: ${secret.name}, ${secret.country}")
 
         _ui.value = WordleUiState(
-            board = createBoard(secret.length),
-            letterStat  = emptyMap(),
+            board = createBoard(secret.name.length),
             currentRow = 0,
             currentCol = 0,
-            gameOver   = false,
-            message    = null
+            gameOver = false,
+            message = null,
+            letterStat = emptyMap(),
+
+            // yeni alanlar
+            secretName = secret.name,
+            secretCountry = secret.country,
+            secretFlagUrl = secret.flagUrl
         )
     }
 

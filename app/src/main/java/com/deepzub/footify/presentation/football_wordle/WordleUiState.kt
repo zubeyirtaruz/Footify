@@ -9,5 +9,8 @@ data class WordleUiState(
     val currentRow : Int  = 0,
     val currentCol : Int  = 0,
     val gameOver   : Boolean = false,
-    val message    : String? = null
+    val message    : String? = null,
+    val secretName: String = "",
+    val secretCountry: String = "",
+    val secretFlagUrl: String = ""
 )

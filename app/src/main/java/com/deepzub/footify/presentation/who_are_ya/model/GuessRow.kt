@@ -4,5 +4,6 @@ import com.deepzub.footify.domain.model.Footballer
 
 data class GuessRow(
     val footballer: Footballer,
-    val attributes: List<GuessAttribute?>
+    val attributes: List<GuessAttribute?>,
+    var animated: Boolean = false
 )

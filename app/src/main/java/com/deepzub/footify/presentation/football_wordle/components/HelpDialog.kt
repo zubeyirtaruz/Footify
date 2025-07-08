@@ -38,18 +38,14 @@ fun FootballWordleHelpDialog(onDismiss: () -> Unit) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "Guess present footballer in 6 tries. After each guess and just like Wordle, the colour of the tiles will change to show how close your guess was to the player.",
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Bullet("Guess present footballer in 6 tries. After each guess and just like Wordle, the colour of the tiles will change to show how close your guess was to the player.")
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ExampleWordRow(
                     word = "MESSI",
                     coloredIndex = 0,
-                    color = Color(0xFF00C853), // Green
+                    color = Color(0xFF00C853),
                     description = "The letter M is in the player's name and in the correct spot."
                 )
 
@@ -58,7 +54,7 @@ fun FootballWordleHelpDialog(onDismiss: () -> Unit) {
                 ExampleWordRow(
                     word = "NEUER",
                     coloredIndex = 2,
-                    color = Color(0xFFFFC107), // Yellow
+                    color = Color(0xFFFFC107),
                     description = "The letter U is in the player's name but in the wrong spot."
                 )
 
@@ -67,17 +63,13 @@ fun FootballWordleHelpDialog(onDismiss: () -> Unit) {
                 ExampleWordRow(
                     word = "VARDY",
                     coloredIndex = 3,
-                    color = Color(0xFF424242), // Dark gray
+                    color = Color(0xFF424242),
                     description = "The letter D is not in the player's name in any spot."
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Text(
-                    text = "After 2 attempts, the player's country will be revealed at the top of the board.",
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Bullet("After 2 attempts, the player's country will be revealed at the top of the board.")
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -90,5 +82,17 @@ fun FootballWordleHelpDialog(onDismiss: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun Bullet(text: String) {
+    Row(
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier.padding(vertical = 2.dp)
+    ) {
+
+        Text("•  ", color = colorResource(id = R.color.bullet_color))
+        Text(text, color = Color.White, style = MaterialTheme.typography.bodySmall)
     }
 }

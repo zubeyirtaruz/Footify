@@ -69,7 +69,7 @@ fun Tile(tile: TileState, wordLength: Int, indexInRow: Int) {
             }
 
             // 90 dereceye gelince rengi başlat
-            delay(250L) // 500ms dönüşün yarısı
+            delay(250L)
             colorAnim.animateTo(targetColor, tween(300))
         } else {
             rotateAnim.snapTo(0f)

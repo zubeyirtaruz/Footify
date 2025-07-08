@@ -19,8 +19,6 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
     private val _ui = MutableStateFlow(WordleUiState(board = emptyList()))
     val ui: StateFlow<WordleUiState> = _ui
 
-    private val MAX_ROWS = 6
-
     init {
         reset()
     }
@@ -96,7 +94,7 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
                 }
             }
 
-            val finished = (guess == secret.name) || s.currentRow == MAX_ROWS - 1
+            val finished = (guess == secret.name) || s.currentRow == 5
 
             val newLetterStat = s.letterStat.toMutableMap()
 
@@ -139,8 +137,6 @@ class FootballWordleViewModel @Inject constructor() : ViewModel() {
             gameOver = false,
             message = null,
             letterStat = emptyMap(),
-
-            // yeni alanlar
             secretName = secret.name,
             secretCountry = secret.country,
             secretFlagUrl = secret.flagUrl

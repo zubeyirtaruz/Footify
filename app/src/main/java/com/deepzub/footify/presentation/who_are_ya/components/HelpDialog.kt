@@ -49,18 +49,6 @@ fun HelpDialog(onDismiss: () -> Unit) {
 
                 Spacer(Modifier.height(12.dp))
 
-                @Composable
-                fun Bullet(text: String) {
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        modifier = Modifier.padding(vertical = 2.dp)
-                    ) {
-
-                        Text("•  ", color = colorResource(id = R.color.bullet_color))
-                        Text(text, color = Color.White, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-
                 Bullet("You have 8 chances to guess the football player from the Premier League, Bundesliga, LaLiga, Serie A or Ligue 1.")
                 Bullet("Choose 'Show Photo' to see a blurred picture of the mystery footballer to get started or 'Hide Photo' and make a random opening guess.")
                 Bullet("After each guess, feedback will be revealed, showing how close your guess is to the mystery footballer in a number of categories.")
@@ -83,5 +71,17 @@ fun HelpDialog(onDismiss: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun Bullet(text: String) {
+    Row(
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier.padding(vertical = 2.dp)
+    ) {
+
+        Text("•  ", color = colorResource(id = R.color.bullet_color))
+        Text(text, color = Color.White, style = MaterialTheme.typography.bodySmall)
     }
 }

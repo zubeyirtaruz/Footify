@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +44,8 @@ fun WhoAreYaScreen(
     var userQuery by remember { mutableStateOf("") }
     var showHelp by remember { mutableStateOf(false) }
 
+    val listState = rememberLazyListState()
+
     when {
         state.isLoading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -54,7 +58,6 @@ fun WhoAreYaScreen(
         }
 
         else -> {
-            println(state.player?.name)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -102,13 +105,20 @@ fun WhoAreYaScreen(
                         )
                     }
 
+                    LaunchedEffect(state.guesses.size) {
+                        listState.animateScrollToItem(0)
+                    }
+
                     // Tahmin geçmişi
-                    if (state.guesses.isNotEmpty()) {
-                        Spacer(Modifier.height(16.dp))
-                        LazyColumn {
-                            items(state.guesses) { row ->
-                                GuessRowItem(row)
-                            }
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        items(
+                            items = state.guesses.reversed(), // En son tahmin en üstte
+                            key = { it.footballer.name } // benzersiz bir ID
+                        ) { row ->
+                            GuessRowItem(row)
                         }
                     }
                 }

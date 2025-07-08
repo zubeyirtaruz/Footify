@@ -108,6 +108,7 @@ class WhoAreYaViewModel @Inject constructor(
         val random = _ui.value.footballers.randomOrNull()
         _ui.update { it.copy(player = random) }
         random?.id?.let { fetchShirtNumber(it) }
+        println("New Footballer: ${ui.value.player?.name}")
     }
 
     private fun fetchShirtNumber(playerId: Int) {

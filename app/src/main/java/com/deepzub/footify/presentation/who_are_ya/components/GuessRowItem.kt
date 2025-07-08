@@ -1,32 +1,52 @@
 package com.deepzub.footify.presentation.who_are_ya.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.deepzub.footify.R
 import com.deepzub.footify.presentation.who_are_ya.model.GuessRow
+import kotlinx.coroutines.delay
+import androidx.compose.ui.unit.IntOffset
 
 @Composable
 fun GuessRowItem(row: GuessRow) {
+    val offsetX = remember { Animatable(300f) } // Başlangıçta ekran dışında (sağda)
+
+    LaunchedEffect(Unit) {
+        offsetX.animateTo(
+            targetValue = 0f,
+            animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .offset { IntOffset(offsetX.value.toInt(), 0) }
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = R.color.guess_row_bg)
@@ -53,12 +73,34 @@ fun GuessRowItem(row: GuessRow) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                row.attributes.forEach { attr ->
+                row.attributes.forEachIndexed { index, attr ->
                     attr?.let {
-                        AttrBox(
-                            attr = it,
-                            modifier = Modifier.weight(1f)
-                        )
+                        val rotation = remember { Animatable(0f) }
+
+                        if (!row.animated) {
+                            LaunchedEffect(Unit) {
+                                delay(index * 80L)
+                                rotation.animateTo(180f, tween(500))
+                                row.animated = true
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .graphicsLayer {
+                                    rotationY = rotation.value
+                                    cameraDistance = 8 * density
+                                }
+                        ) {
+                            Box(
+                                modifier = Modifier.graphicsLayer {
+                                    rotationY = if (rotation.value <= 90f) 0f else 180f
+                                }
+                            ) {
+                                AttrBox(attr = it)
+                            }
+                        }
                     }
                 }
             }

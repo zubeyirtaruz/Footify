@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.deepzub.footify.presentation.football_games.FootballGamesScreen
 import com.deepzub.footify.presentation.football_wordle.FootballWordleScreen
+import com.deepzub.footify.presentation.iconic_goal.IconicGoalScreen
 import com.deepzub.footify.presentation.who_are_ya.WhoAreYaScreen
 
 @Composable
@@ -26,6 +27,7 @@ fun AppNavGraph(navController: NavHostController) {
             when (gameId) {
                 ScreenName.WhoAreYa.id -> WhoAreYaScreen(navController)
                 ScreenName.FootballWordle.id -> FootballWordleScreen(navController)
+                ScreenName.IconicGoal.id -> IconicGoalScreen(navController)
                 else -> {
                     println("Unknown gameId: $gameId")
                 }

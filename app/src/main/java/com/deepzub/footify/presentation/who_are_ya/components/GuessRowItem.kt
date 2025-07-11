@@ -1,7 +1,6 @@
 package com.deepzub.footify.presentation.who_are_ya.components
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -30,23 +28,13 @@ import androidx.compose.ui.unit.sp
 import com.deepzub.footify.R
 import com.deepzub.footify.presentation.who_are_ya.model.GuessRow
 import kotlinx.coroutines.delay
-import androidx.compose.ui.unit.IntOffset
 
 @Composable
 fun GuessRowItem(row: GuessRow) {
-    val offsetX = remember { Animatable(300f) } // Başlangıçta ekran dışında (sağda)
-
-    LaunchedEffect(Unit) {
-        offsetX.animateTo(
-            targetValue = 0f,
-            animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
-        )
-    }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .offset { IntOffset(offsetX.value.toInt(), 0) }
             .padding(horizontal = 16.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorResource(id = R.color.guess_row_bg)

@@ -19,7 +19,7 @@ class FootballGamesViewModel : ViewModel() {
         _games.value = listOf(
             GameItem(id = 1, name = "Who Are Ya?", imageRes = R.drawable.who_are_ya),
             GameItem(id = 2, name = "Football Wordle", imageRes = R.drawable.wordle),
-            GameItem(id = 3, name = "Football Connections", upComing = true, imageRes = R.drawable.connections),
+            GameItem(id = 3, name = "Iconic Goal", imageRes = R.drawable.connections),
             GameItem(id = 4, name = "Football Bingo", upComing = true, imageRes = R.drawable.bingo),
             GameItem(id = 5, name = "Career Path Challenge", upComing = true, imageRes = R.drawable.career_path),
             GameItem(id = 6, name = "SuperDraft Soccer", upComing = true, imageRes = R.drawable.superdraft),

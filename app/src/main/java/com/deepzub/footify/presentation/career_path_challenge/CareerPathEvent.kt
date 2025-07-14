@@ -1,5 +1,8 @@
 package com.deepzub.footify.presentation.career_path_challenge
 
-class CareerPathEvent {
-
+sealed class CareerPathEvent {
+    data class MakeGuess(val guess: String) : CareerPathEvent()
+    data class OnQueryChange(val query: String) : CareerPathEvent()
+    data class ToggleHelp(val show: Boolean) : CareerPathEvent()
+    object ResetGame : CareerPathEvent()
 }

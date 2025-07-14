@@ -1,26 +1,26 @@
 package com.deepzub.footify.presentation.career_path_challenge
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.deepzub.footify.presentation.career_path_challenge.components.ClubHistoryTable
 import com.deepzub.footify.presentation.career_path_challenge.components.GuessInputField
 import com.deepzub.footify.presentation.career_path_challenge.components.HelpDialog
 import com.deepzub.footify.presentation.career_path_challenge.components.TopBar
+import com.deepzub.footify.presentation.career_path_challenge.model.ClubEntry
 
 @Composable
 fun CareerPathScreen(
@@ -29,6 +29,15 @@ fun CareerPathScreen(
 ) {
 
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+
+    val displayedClubs = List(state.maxGuesses) { index ->
+        if (index < state.revealedCount || state.isGameOver) {
+            state.footballer?.careerPath?.getOrNull(index) ?: ClubEntry("????", "????", "??", "(?)")
+        } else {
+            ClubEntry("????", "????", "??", "(?)")
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -45,7 +54,7 @@ fun CareerPathScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        ClubHistoryTable(clubs = state.revealedClubs)
+        ClubHistoryTable(clubs = displayedClubs)
 
         Spacer(Modifier.height(24.dp))
 
@@ -59,12 +68,11 @@ fun CareerPathScreen(
                 }
             )
         } else {
-            Text(
-                text = if (state.isCorrect) "Correct! 🎉" else "Wrong! It was: ${state.footballer?.name}",
-                fontWeight = FontWeight.Bold,
-                color = if (state.isCorrect) Color.Green else Color.Red,
-                fontSize = 18.sp
-            )
+            Toast.makeText(
+                context,
+                "Answer: ${state.footballer?.name ?: "Unknown"}",
+                Toast.LENGTH_LONG
+            ).show()
         }
 
         if (state.showHelp) {

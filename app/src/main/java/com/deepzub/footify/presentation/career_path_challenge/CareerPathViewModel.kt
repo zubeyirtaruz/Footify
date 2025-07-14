@@ -22,20 +22,23 @@ class CareerPathViewModel @Inject constructor() : ViewModel() {
     fun onEvent(event: CareerPathEvent) {
         when (event) {
             is CareerPathEvent.MakeGuess -> {
-                val correct = event.guess.equals(_state.value.footballer?.name, ignoreCase = true)
-                val newClubList = _state.value.revealedClubs.toMutableList().apply {
-                    if (!correct && size < (_state.value.footballer?.careerPath?.size ?: 8)) {
-                        add(_state.value.footballer?.careerPath?.getOrNull(size) ?: ClubEntry("????", "????", "??", "??"))
-                    }
+                val current = _state.value
+                val footballer = current.footballer ?: return
+                val correct = event.guess.equals(footballer.name, ignoreCase = true)
+
+                val newRevealedCount = when {
+                    correct -> footballer.careerPath.size
+                    current.revealedCount < footballer.careerPath.size -> current.revealedCount + 1
+                    else -> current.revealedCount
                 }
 
                 _state.update {
                     it.copy(
                         userGuess = "",
                         isCorrect = correct,
-                        currentGuess = it.currentGuess + 1,
-                        revealedClubs = newClubList,
-                        isGameOver = correct || newClubList.size >= it.maxGuesses
+                        currentGuess = current.currentGuess + 1,
+                        revealedCount = newRevealedCount,
+                        isGameOver = correct || newRevealedCount >= footballer.careerPath.size
                     )
                 }
             }
@@ -55,7 +58,6 @@ class CareerPathViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadNewPlayer() {
-        // Dummy data
         val clubs = listOf(
             ClubEntry("1993–1995", "Rosario Central", "51", "(7)"),
             ClubEntry("1995–1999", "Rosario Central", "100", "(15)"),
@@ -70,8 +72,8 @@ class CareerPathViewModel @Inject constructor() : ViewModel() {
 
         _state.value = CareerPathState(
             footballer = player,
-            revealedClubs = listOf(player.careerPath.first())
+            revealedCount = 0,
+            maxGuesses = clubs.size
         )
     }
-
 }

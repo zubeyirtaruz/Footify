@@ -2,6 +2,7 @@ package com.deepzub.footify.presentation.career_path_challenge
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,6 +37,8 @@ import com.deepzub.footify.presentation.career_path_challenge.components.GuessIn
 import com.deepzub.footify.presentation.career_path_challenge.components.HelpDialog
 import com.deepzub.footify.presentation.career_path_challenge.components.TopBar
 import com.deepzub.footify.presentation.career_path_challenge.model.ClubEntry
+import com.deepzub.footify.presentation.career_path_challenge.components.GuessSection
+import com.deepzub.footify.util.ShowToast
 
 @Composable
 fun CareerPathScreen(
@@ -43,90 +47,110 @@ fun CareerPathScreen(
 ) {
 
     val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
 
     val displayedClubs = List(state.maxGuesses) { index ->
-        if (index < state.revealedCount || state.isGameOver) {
+        if (index < state.currentGuess || state.isGameOver) {
             state.footballer?.careerPath?.getOrNull(index) ?: ClubEntry("????", "????", "??", "(?)")
         } else {
             ClubEntry("????", "????", "??", "(?)")
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(16.dp)
-    ) {
-        Spacer(Modifier.height(50.dp))
+    when {
+        state.isLoading -> {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
 
-        TopBar(
-            onResetClick = { viewModel.onEvent(CareerPathEvent.ResetGame) },
-            onHelpClick = { viewModel.onEvent(CareerPathEvent.ToggleHelp(true)) }
-        )
+        state.error != null -> {
+            ShowToast(state.error ?: "Unknown error")
+        }
 
-        Spacer(Modifier.height(16.dp))
+        else -> {
 
-        ClubHistoryTable(clubs = displayedClubs)
-
-        Spacer(Modifier.height(24.dp))
-
-        if (!state.isGameOver) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(16.dp)
             ) {
-                var localGuess by remember { mutableStateOf(state.userGuess) }
+                Spacer(Modifier.height(50.dp))
 
-                GuessInputField(
-                    query = localGuess,
-                    onQueryChange = {
-                        localGuess = it
-                        viewModel.onEvent(CareerPathEvent.OnQueryChange(it))
-                    },
-                    placeholderText = "Guess ${state.currentGuess} of ${state.maxGuesses}",
-                    onGuessSubmit = {
-                        viewModel.onEvent(CareerPathEvent.MakeGuess(localGuess))
-                        localGuess = ""
-                    }
+                TopBar(
+                    onResetClick = { viewModel.onEvent(CareerPathEvent.ResetGame) },
+                    onHelpClick = { viewModel.onEvent(CareerPathEvent.ToggleHelp(true)) }
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(Modifier.height(16.dp))
 
-                Button(
-                    onClick = {
-                        viewModel.onEvent(CareerPathEvent.MakeGuess(localGuess))
-                        localGuess = ""
-                    },
-                    modifier = Modifier
-                        .height(56.dp)
-                        .defaultMinSize(minWidth = 80.dp),
-                    shape = RoundedCornerShape(6.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                    contentPadding = PaddingValues(horizontal = 8.dp)
-                ) {
-                    Text(
-                        text = "SKIP",
-                        color = Color.White,
-                        fontSize = 16.sp
-                    )
+                ClubHistoryTable(clubs = displayedClubs)
+
+                Spacer(Modifier.height(24.dp))
+
+                if (!state.isGameOver) {
+                    var userQuery by remember { mutableStateOf("") }
+
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            GuessInputField(
+                                query = userQuery,
+                                onQueryChange = {
+                                    userQuery = it
+                                },
+                                placeholderText = "Guess ${state.currentGuess} of ${state.maxGuesses}"
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Button(
+                                onClick = {
+                                    viewModel.onEvent(CareerPathEvent.MakeGuess(userQuery))
+                                    userQuery = ""
+                                },
+                                modifier = Modifier
+                                    .height(56.dp)
+                                    .defaultMinSize(minWidth = 80.dp),
+                                shape = RoundedCornerShape(6.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                                contentPadding = PaddingValues(horizontal = 8.dp)
+                            ) {
+                                Text(
+                                    text = "SKIP",
+                                    color = Color.White,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+
+                        GuessSection(
+                            userQuery = userQuery,
+                            enabled = !state.isGameOver,
+                            suggestions = state.footballers,
+                            onGuessMade = { guess ->
+                                userQuery = ""
+                                viewModel.onEvent(CareerPathEvent.MakeGuess(guess.name))
+                            }
+                        )
+                    }
+                }
+                else {
+                    Toast.makeText(
+                        LocalContext.current,
+                        "Answer: ${state.footballer?.name ?: "Unknown"}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                if (state.showHelp) {
+                    HelpDialog(onDismiss = { viewModel.onEvent(CareerPathEvent.ToggleHelp(false)) })
                 }
             }
         }
-        else {
-            Toast.makeText(
-                context,
-                "Answer: ${state.footballer?.name ?: "Unknown"}",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-
-        if (state.showHelp) {
-            HelpDialog(onDismiss = { viewModel.onEvent(CareerPathEvent.ToggleHelp(false)) })
-        }
     }
-
 }

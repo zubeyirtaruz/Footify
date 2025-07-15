@@ -7,7 +7,7 @@ import com.deepzub.footify.domain.model.Footballer
 import com.deepzub.footify.domain.use_case.get_country.GetCountriesUseCase
 import com.deepzub.footify.presentation.who_are_ya.model.GuessAttribute
 import com.deepzub.footify.presentation.who_are_ya.model.GuessRow
-import com.deepzub.footify.domain.use_case.get_footballer.GetFootballersUseCase
+import com.deepzub.footify.domain.use_case.get_footballers.GetFootballersUseCase
 import com.deepzub.footify.domain.use_case.get_one_player.GetOnePlayerUseCase
 import com.deepzub.footify.presentation.who_are_ya.components.getPositionShortName
 import com.deepzub.footify.presentation.who_are_ya.model.AttributeType
@@ -63,10 +63,10 @@ class WhoAreYaViewModel @Inject constructor(
         // 5 lig futbolcuları paralel Flow
         val leagues = listOf(
             Constants.PREMIER_LEAGUE_ID,
-            Constants.BUNDESLIGA_ID,
-            Constants.LA_LIGA_ID,
-            Constants.LIGUE_1_ID,
-            Constants.SERIE_A_ID
+//            Constants.BUNDESLIGA_ID,
+//            Constants.LA_LIGA_ID,
+//            Constants.LIGUE_1_ID,
+//            Constants.SERIE_A_ID
         )
 
         val footballerFlows = leagues.map { league ->

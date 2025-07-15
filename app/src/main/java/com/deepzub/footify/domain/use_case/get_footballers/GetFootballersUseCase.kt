@@ -1,4 +1,4 @@
-package com.deepzub.footify.domain.use_case.get_footballer
+package com.deepzub.footify.domain.use_case.get_footballers
 
 import com.deepzub.footify.domain.model.Footballer
 import com.deepzub.footify.domain.repository.WhoAreYaRepository

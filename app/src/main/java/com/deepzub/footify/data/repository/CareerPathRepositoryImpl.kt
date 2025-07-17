@@ -4,6 +4,7 @@ import com.deepzub.footify.data.mapper.toDomain
 import com.deepzub.footify.data.mapper.toEntity
 import com.deepzub.footify.data.remote.PlayerAPI
 import com.deepzub.footify.data.room.FootballerDao
+import com.deepzub.footify.domain.model.CareerTeam
 import com.deepzub.footify.domain.model.Footballer
 import com.deepzub.footify.domain.repository.CareerPathRepository
 import javax.inject.Inject
@@ -22,6 +23,12 @@ class CareerPathRepositoryImpl @Inject constructor(
             footballerDao.insertFootballers(remoteFootballers.map { it.toEntity() })
             remoteFootballers
         }
+    }
+
+    override suspend fun getTeamsPlayerById(id: Int): List<CareerTeam> {
+        val response = playerAPI.getTeamsPlayerById(id)
+        val playersTeams = response.response.map { it.toDomain() }
+        return playersTeams
     }
 
     private suspend fun fetchPlayersRecursively(

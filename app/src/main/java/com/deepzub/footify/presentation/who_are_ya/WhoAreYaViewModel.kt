@@ -63,10 +63,10 @@ class WhoAreYaViewModel @Inject constructor(
         // 5 lig futbolcuları paralel Flow
         val leagues = listOf(
             Constants.PREMIER_LEAGUE_ID,
-//            Constants.BUNDESLIGA_ID,
-//            Constants.LA_LIGA_ID,
-//            Constants.LIGUE_1_ID,
-//            Constants.SERIE_A_ID
+            Constants.BUNDESLIGA_ID,
+            Constants.LA_LIGA_ID,
+            Constants.LIGUE_1_ID,
+            Constants.SERIE_A_ID
         )
 
         val footballerFlows = leagues.map { league ->

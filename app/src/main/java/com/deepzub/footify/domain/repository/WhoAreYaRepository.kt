@@ -12,7 +12,7 @@ interface WhoAreYaRepository {
     ): List<Footballer>
 
     suspend fun getPlayerById(
-        id: Int,
+        id: Int
     ): List<OnePlayer>
 
     suspend fun getCountries(): List<Country>

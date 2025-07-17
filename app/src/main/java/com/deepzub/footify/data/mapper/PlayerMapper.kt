@@ -2,7 +2,9 @@ package com.deepzub.footify.data.mapper
 
 import com.deepzub.footify.data.remote.dto.oneplayer.ResponseOnePlayer
 import com.deepzub.footify.data.remote.dto.players.ResponsePlayers
+import com.deepzub.footify.data.remote.dto.teams.ResponseTeam
 import com.deepzub.footify.data.room.FootballerEntity
+import com.deepzub.footify.domain.model.CareerTeam
 import com.deepzub.footify.domain.model.Footballer
 import com.deepzub.footify.domain.model.OnePlayer
 
@@ -55,5 +57,13 @@ fun Footballer.toEntity(): FootballerEntity {
         position = position,
         leagueLogo = leagueLogo,
         shirtNumber = shirtNumber
+    )
+}
+
+fun ResponseTeam.toDomain(): CareerTeam {
+    return CareerTeam(
+        id = team.id,
+        name = team.name,
+        seasons = seasons
     )
 }

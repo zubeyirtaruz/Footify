@@ -2,6 +2,7 @@ package com.deepzub.footify.data.remote
 
 import com.deepzub.footify.data.remote.dto.oneplayer.OnePlayerDto
 import com.deepzub.footify.data.remote.dto.players.PlayersDto
+import com.deepzub.footify.data.remote.dto.statistics.StatisticsDto
 import com.deepzub.footify.data.remote.dto.teams.TeamsDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -24,5 +25,11 @@ interface PlayerAPI {
     suspend fun getTeamsPlayerById(
         @Query("player") id: Int,
     ) : TeamsDto
+
+    @GET("players")
+    suspend fun getStatisticsByTeamIdAndPlayerName(
+        @Query("team") id: Int,
+        @Query("search") name: String
+    ) : StatisticsDto
 
 }

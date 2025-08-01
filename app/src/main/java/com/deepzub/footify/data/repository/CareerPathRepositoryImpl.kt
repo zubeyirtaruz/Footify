@@ -2,11 +2,14 @@ package com.deepzub.footify.data.repository
 
 import com.deepzub.footify.data.mapper.toDomain
 import com.deepzub.footify.data.mapper.toEntity
+import com.deepzub.footify.data.mapper.toPlayerSeasonStatsList
 import com.deepzub.footify.data.remote.PlayerAPI
 import com.deepzub.footify.data.room.FootballerDao
 import com.deepzub.footify.domain.model.CareerTeam
 import com.deepzub.footify.domain.model.Footballer
+import com.deepzub.footify.domain.model.PlayerSeasonStats
 import com.deepzub.footify.domain.repository.CareerPathRepository
+import com.google.gson.Gson
 import javax.inject.Inject
 
 class CareerPathRepositoryImpl @Inject constructor(
@@ -29,6 +32,16 @@ class CareerPathRepositoryImpl @Inject constructor(
         val response = playerAPI.getTeamsPlayerById(id)
         val playersTeams = response.response.map { it.toDomain() }
         return playersTeams
+    }
+
+    override suspend fun getStatisticsByTeamIdAndPlayerName(
+        teamId: Int,
+        playerName: String
+    ): List<PlayerSeasonStats> {
+
+        val response = playerAPI.getStatisticsByTeamIdAndPlayerName(teamId, playerName)
+//        println("RAW API response: ${Gson().toJson(response)}")
+        return response.toPlayerSeasonStatsList()
     }
 
     private suspend fun fetchPlayersRecursively(

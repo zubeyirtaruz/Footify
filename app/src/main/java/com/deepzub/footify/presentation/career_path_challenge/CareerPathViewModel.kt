@@ -3,6 +3,7 @@ package com.deepzub.footify.presentation.career_path_challenge
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deepzub.footify.domain.use_case.get_footballers_for_career_path.GetFootballersForCareerPath
+import com.deepzub.footify.domain.use_case.get_player_season_stats.GetPlayerSeasonStats
 import com.deepzub.footify.domain.use_case.get_teams_players.GetTeamsPlayers
 import com.deepzub.footify.presentation.career_path_challenge.model.ClubEntry
 import com.deepzub.footify.presentation.career_path_challenge.model.Footballer
@@ -13,6 +14,7 @@ import javax.inject.Inject
 import com.deepzub.footify.util.Constants
 import com.deepzub.footify.util.Resource
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -22,7 +24,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class CareerPathViewModel @Inject constructor(
     private val getFootballers: GetFootballersForCareerPath,
-    private val getTeams: GetTeamsPlayers
+    private val getTeams: GetTeamsPlayers,
+    private val getPlayerStats: GetPlayerSeasonStats
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CareerPathState())
@@ -114,9 +117,7 @@ class CareerPathViewModel @Inject constructor(
         _state.update { it.copy(player = random) }
 
         println("New Footballer: ${random.name}")
-        println("New Footballers ID: ${random.id}")
-
-        getTeams(random.id)
+        println("New Footballer ID: ${random.id}")
 
         viewModelScope.launch {
             getTeams(random.id).collect { result ->
@@ -126,27 +127,38 @@ class CareerPathViewModel @Inject constructor(
 
                         val filtered = careerTeams
                             .filterNot {
-                                // 1. Milli takım kontrolü
                                 it.name.contains(random.nationality, ignoreCase = true)
                             }
-                            .filter {
-                                // 2. Sezon bilgisi boş olanları alma
-                                it.seasons.isNotEmpty()
-                            }
+                            .filter { it.seasons.isNotEmpty() }
 
                         val sorted = filtered.sortedBy { it.seasons.minOrNull() ?: Int.MAX_VALUE }
 
-                        val clubs = sorted.map {
+                        val clubs = mutableListOf<ClubEntry>()
+
+                        sorted.forEach { team ->
                             val yearsRange = when {
-                                it.seasons.size == 1 -> it.seasons.first().toString()
-                                else -> "${it.seasons.minOrNull()}–${it.seasons.maxOrNull()}"
+                                team.seasons.size == 1 -> team.seasons.first().toString()
+                                else -> "${team.seasons.minOrNull()}–${team.seasons.maxOrNull()}"
                             }
 
-                            ClubEntry(
-                                years = yearsRange,
-                                team = it.name,
-                                apps = "??",
-                                goals = "(?)"
+                            // Oyuncunun bu takımdaki tüm sezon istatistiklerini al
+                            val statsResult = getPlayerStats(team.id, random.name)
+                                .first { it is Resource.Success || it is Resource.Error }
+
+                            statsResult.data?.forEach {
+                                println("Season: ${it.season}, Apps: ${it.appearances}, Goals: ${it.goals}")
+                            }
+
+                            val totalApps = statsResult.data?.sumOf { it.appearances } ?: 0
+                            val totalGoals = statsResult.data?.sumOf { it.goals } ?: 0
+
+                            clubs.add(
+                                ClubEntry(
+                                    years = yearsRange,
+                                    team = team.name,
+                                    apps = totalApps.toString(),
+                                    goals = "($totalGoals)"
+                                )
                             )
                         }
 

@@ -2,11 +2,13 @@ package com.deepzub.footify.data.mapper
 
 import com.deepzub.footify.data.remote.dto.oneplayer.ResponseOnePlayer
 import com.deepzub.footify.data.remote.dto.players.ResponsePlayers
+import com.deepzub.footify.data.remote.dto.statistics.StatisticsDto
 import com.deepzub.footify.data.remote.dto.teams.ResponseTeam
 import com.deepzub.footify.data.room.FootballerEntity
 import com.deepzub.footify.domain.model.CareerTeam
 import com.deepzub.footify.domain.model.Footballer
 import com.deepzub.footify.domain.model.OnePlayer
+import com.deepzub.footify.domain.model.PlayerSeasonStats
 
 fun ResponsePlayers.toDomain(): Footballer {
     return Footballer(
@@ -66,4 +68,22 @@ fun ResponseTeam.toDomain(): CareerTeam {
         name = team.name,
         seasons = seasons
     )
+}
+
+fun StatisticsDto.toPlayerSeasonStatsList(): List<PlayerSeasonStats> {
+    return response.flatMap { responseItem ->
+        responseItem.statistics.mapNotNull { stat ->
+            val season = stat.league.season
+            val teamName = stat.team.name
+            val appearances = stat.games.appearences ?: 0
+            val goals = stat.goals.total ?: 0
+
+            PlayerSeasonStats(
+                season = season,
+                teamName = teamName,
+                appearances = appearances,
+                goals = goals
+            )
+        }
+    }
 }

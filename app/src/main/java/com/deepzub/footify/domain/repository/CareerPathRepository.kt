@@ -2,6 +2,7 @@ package com.deepzub.footify.domain.repository
 
 import com.deepzub.footify.domain.model.CareerTeam
 import com.deepzub.footify.domain.model.Footballer
+import com.deepzub.footify.domain.model.PlayerSeasonStats
 
 interface CareerPathRepository {
 
@@ -13,5 +14,10 @@ interface CareerPathRepository {
     suspend fun getTeamsPlayerById(
         id: Int
     ): List<CareerTeam>
+
+    suspend fun getStatisticsByTeamIdAndPlayerName(
+         teamId: Int,
+         playerName: String
+    ): List<PlayerSeasonStats>
 
 }

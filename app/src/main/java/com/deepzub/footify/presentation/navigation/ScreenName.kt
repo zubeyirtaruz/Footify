@@ -5,9 +5,9 @@ enum class ScreenName(val id: Int) {
     FootballWordle(2),
     IconicGoal(3),
     CareerPathChallenge(4),
-    FootballBingo(5),
-    SuperDraftSoccer(6),
-    GuesstheFootballClub(7),
+    GuesstheFootballClub(5),
+    FootballBingo(6),
+    SuperDraftSoccer(7),
     Pack11(8),
     BOX2BOX(9);
 }

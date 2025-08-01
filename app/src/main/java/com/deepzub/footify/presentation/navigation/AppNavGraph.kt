@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.deepzub.footify.presentation.career_path_challenge.CareerPathScreen
 import com.deepzub.footify.presentation.football_games.FootballGamesScreen
 import com.deepzub.footify.presentation.football_wordle.FootballWordleScreen
+import com.deepzub.footify.presentation.guess_football_club.GuessClubScreen
 import com.deepzub.footify.presentation.iconic_goal.IconicGoalScreen
 import com.deepzub.footify.presentation.who_are_ya.WhoAreYaScreen
 
@@ -30,6 +31,7 @@ fun AppNavGraph(navController: NavHostController) {
                 ScreenName.FootballWordle.id -> FootballWordleScreen(navController)
                 ScreenName.IconicGoal.id -> IconicGoalScreen(navController)
                 ScreenName.CareerPathChallenge.id -> CareerPathScreen(navController)
+                ScreenName.GuesstheFootballClub.id -> GuessClubScreen(navController)
                 else -> {
                     println("Unknown gameId: $gameId")
                 }

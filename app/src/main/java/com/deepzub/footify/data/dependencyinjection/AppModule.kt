@@ -2,14 +2,18 @@ package com.deepzub.footify.data.dependencyinjection
 
 import android.content.Context
 import androidx.room.Room
+import com.deepzub.footify.data.remote.ClubAPI
 import com.deepzub.footify.data.remote.CountryAPI
 import com.deepzub.footify.data.remote.PlayerAPI
 import com.deepzub.footify.data.repository.CareerPathRepositoryImpl
+import com.deepzub.footify.data.repository.GuessClubRepositoryImpl
 import com.deepzub.footify.data.repository.WhoAreYaRepositoryImpl
 import com.deepzub.footify.data.room.AppDatabase
+import com.deepzub.footify.data.room.ClubDao
 import com.deepzub.footify.data.room.CountryDao
 import com.deepzub.footify.data.room.FootballerDao
 import com.deepzub.footify.domain.repository.CareerPathRepository
+import com.deepzub.footify.domain.repository.GuessClubRepository
 import com.deepzub.footify.domain.repository.WhoAreYaRepository
 import com.deepzub.footify.util.Constants
 import dagger.Module
@@ -54,7 +58,9 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "footify_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(false)
+            .build()
     }
 
     @Provides
@@ -67,6 +73,7 @@ object AppModule {
     ): WhoAreYaRepository {
         return WhoAreYaRepositoryImpl(playerAPI,countryAPI,footballerDao,countryDao)
     }
+
     @Provides
     @Singleton
     fun provideCareerPathRepository(
@@ -74,6 +81,17 @@ object AppModule {
         footballerDao: FootballerDao,
     ): CareerPathRepository {
         return CareerPathRepositoryImpl(playerAPI,footballerDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGuessClubRepository(
+        clubAPI: ClubAPI,
+        countryAPI: CountryAPI,
+        clubDao: ClubDao,
+        countryDao: CountryDao
+    ): GuessClubRepository {
+        return GuessClubRepositoryImpl(clubAPI,countryAPI,clubDao,countryDao)
     }
 
     @Provides
@@ -90,6 +108,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideClubApi(retrofit: Retrofit): ClubAPI {
+        return retrofit.create(ClubAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
     fun provideFootballerDao(db: AppDatabase): FootballerDao {
         return db.footballerDao()
     }
@@ -98,6 +122,12 @@ object AppModule {
     @Singleton
     fun provideCountryDao(db: AppDatabase): CountryDao {
         return db.countryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideClubDao(db: AppDatabase): ClubDao {
+        return db.clubDao()
     }
 
 }

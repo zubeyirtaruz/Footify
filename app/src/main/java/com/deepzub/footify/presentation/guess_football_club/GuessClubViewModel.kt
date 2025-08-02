@@ -62,13 +62,20 @@ class GuessClubViewModel @Inject constructor(
                 }
             }
 
-        // 5 lig kulüpleri paralel Flow
+        // Ligteki kulüplerin paralel Flowu
         val leagues = listOf(
             Constants.PREMIER_LEAGUE_ID,
             Constants.BUNDESLIGA_ID,
             Constants.LA_LIGA_ID,
             Constants.LIGUE_1_ID,
-            Constants.SERIE_A_ID
+//            Constants.SERIE_A_ID,
+//            Constants.EREDIVISE_ID,
+//            Constants.BRAZIL_SERIE_A_ID,
+//            Constants.LIGA_ARGENTINA_ID,
+//            Constants.PRIMEIRA_LIGA_ID,
+//            Constants.SUPER_LIG_ID,
+//            Constants.RUSSIA_PREMIER_LEAGUE_ID,
+//            Constants.MAJOR_LEAGUE_SOCCER_ID
         )
 
         val clubFlows = leagues.map { league ->

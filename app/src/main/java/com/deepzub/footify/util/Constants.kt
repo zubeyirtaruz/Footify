@@ -11,6 +11,14 @@ object Constants {
     const val  LIGUE_1_ID = 61
     const val  SERIE_A_ID = 135
 
+    const val  EREDIVISE_ID = 88
+    const val  BRAZIL_SERIE_A_ID = 71
+    const val  LIGA_ARGENTINA_ID = 128
+    const val  PRIMEIRA_LIGA_ID = 94
+    const val  SUPER_LIG_ID = 203
+    const val  RUSSIA_PREMIER_LEAGUE_ID = 235
+    const val  MAJOR_LEAGUE_SOCCER_ID = 253
+
     const val  SEASON_ID = 2023
 
 }

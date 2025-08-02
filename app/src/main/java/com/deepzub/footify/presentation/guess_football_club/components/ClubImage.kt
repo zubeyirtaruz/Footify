@@ -21,10 +21,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.bumptech.glide.Glide
+import com.deepzub.footify.util.applyCircularMaskBlur
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.deepzub.footify.util.blurBitmap
-import com.deepzub.footify.util.calculateBlurLevel
 
 @Composable
 fun ClubImage(
@@ -40,7 +39,7 @@ fun ClubImage(
     val blurredBitmap by remember(photoUrl, guessCount, originalBitmap.value) {
         derivedStateOf {
             originalBitmap.value?.let {
-                blurBitmap(context, it, calculateBlurLevel(guessCount))
+                applyCircularMaskBlur(context, it, guessCount)
             }
         }
     }

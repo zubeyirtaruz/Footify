@@ -16,7 +16,9 @@ fun ExampleClubGuessRow() {
     val sampleAttrs = listOf(
         ClubGuessAttribute(type = ClubAttributeType.NATION, "https://media.api-sports.io/flags/de.svg", isCorrect = true, isImage = true),
         ClubGuessAttribute(type = ClubAttributeType.EST, "1900↑", isCorrect = false),
-        ClubGuessAttribute(type = ClubAttributeType.CAPACITY, "75K↓", isCorrect = false)
+        ClubGuessAttribute(type = ClubAttributeType.CAPACITY, "75K↓", isCorrect = false),
+        ClubGuessAttribute(type = ClubAttributeType.DIR, "↑", isCorrect = false),
+        ClubGuessAttribute(type = ClubAttributeType.DIST, "351", isCorrect = false)
     )
 
     Row(

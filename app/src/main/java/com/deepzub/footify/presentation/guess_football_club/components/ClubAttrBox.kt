@@ -8,6 +8,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.East
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.North
+import androidx.compose.material.icons.filled.NorthEast
+import androidx.compose.material.icons.filled.NorthWest
+import androidx.compose.material.icons.filled.South
+import androidx.compose.material.icons.filled.SouthEast
+import androidx.compose.material.icons.filled.SouthWest
+import androidx.compose.material.icons.filled.West
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -46,25 +57,61 @@ fun ClubAttrBox(attr: ClubGuessAttribute, modifier: Modifier = Modifier) {
                 .background(bgColor),
             contentAlignment = Alignment.Center
         ) {
-            if (attr.isImage) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(attr.value)
-                        .decoderFactory(SvgDecoder.Factory())
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = attr.label,
-                    modifier = Modifier.size(40.dp).clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Text(
-                    text = getDisplayAttrValue(attr),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
+            when {
+                attr.isImage -> {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(attr.value)
+                            .decoderFactory(SvgDecoder.Factory())
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = attr.label,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                attr.type == ClubAttributeType.DIR -> {
+                    val (icon, label) = when (attr.value) {
+                        "↗" -> Icons.Default.NorthEast to "NE"
+                        "→" -> Icons.Default.East to "E"
+                        "↘" -> Icons.Default.SouthEast to "SE"
+                        "↓" -> Icons.Default.South to "S"
+                        "↙" -> Icons.Default.SouthWest to "SW"
+                        "←" -> Icons.Default.West to "W"
+                        "↖" -> Icons.Default.NorthWest to "NW"
+                        else -> Icons.Default.North to "N"
+                    }
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = if (attr.isCorrect) Icons.Default.LocationOn else icon,
+                            contentDescription = attr.label,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        if (!attr.isCorrect) {
+                            Text(
+                                text = label,
+                                fontSize = 10.sp,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+
+                else -> {
+                    Text(
+                        text = getDisplayAttrValue(attr),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = Color.Black,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
 

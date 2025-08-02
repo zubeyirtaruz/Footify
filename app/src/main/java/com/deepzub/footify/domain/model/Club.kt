@@ -8,5 +8,7 @@ data class Club(
     val logoUrl: String,
     val stadiumName: String,
     val stadiumCapacity: Int,
-    val flagUrl: String = ""
+    val flagUrl: String = "",
+    val latitude: Double? = null,
+    val longitude: Double? = null
 )

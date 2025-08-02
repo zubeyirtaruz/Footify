@@ -21,6 +21,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 @HiltViewModel
 class GuessClubViewModel @Inject constructor(
@@ -147,28 +152,94 @@ class GuessClubViewModel @Inject constructor(
         guess: Club,
         target: Club,
         countries: List<Country>
-    ): List<ClubGuessAttribute?> = listOf(
+    ): List<ClubGuessAttribute?> {
+        val guessLat = guess.latitude
+        val guessLon = guess.longitude
+        val targetLat = target.latitude
+        val targetLon = target.longitude
 
-        countries.find { it.name.equals(guess.country, true) }?.flag?.let { flag ->
+        val distance = if (guessLat != null && guessLon != null && targetLat != null && targetLon != null) {
+            haversine(guessLat, guessLon, targetLat, targetLon)
+        } else null
+
+        val direction = if (guessLat != null && guessLon != null && targetLat != null && targetLon != null) {
+            getDirection(guessLat, guessLon, targetLat, targetLon)
+        } else null
+
+        val isExact = distance != null && distance.toInt() == 0
+
+        return listOf(
+            // Nation (bayrak)
+            countries.find { it.name.equals(guess.country, true) }?.flag?.let { flag ->
+                ClubGuessAttribute(
+                    type = ClubAttributeType.NATION,
+                    value = flag,
+                    isCorrect = guess.country == target.country,
+                    isImage = true
+                )
+            },
+            // Founded year
             ClubGuessAttribute(
-                type = ClubAttributeType.NATION,
-                value = flag,
-                isCorrect = guess.country == target.country,
-                isImage = true)
-        },
-
-        ClubGuessAttribute(
-            type = ClubAttributeType.EST,
-            value = guess.founded.toString(),
-            isCorrect = guess.founded == target.founded,
-            correctValue = target.founded.toString()
-        ),
-
-        ClubGuessAttribute(
-            type = ClubAttributeType.CAPACITY,
-            value = guess.stadiumCapacity.toString(),
-            isCorrect = guess.stadiumCapacity == target.stadiumCapacity,
-            correctValue = target.stadiumCapacity.toString()
+                type = ClubAttributeType.EST,
+                value = guess.founded.toString(),
+                isCorrect = guess.founded == target.founded,
+                correctValue = target.founded.toString()
+            ),
+            // Stadium capacity
+            ClubGuessAttribute(
+                type = ClubAttributeType.CAPACITY,
+                value = guess.stadiumCapacity.toString(),
+                isCorrect = guess.stadiumCapacity == target.stadiumCapacity,
+                correctValue = target.stadiumCapacity.toString()
+            ),
+            // Direction
+            direction?.let {
+                ClubGuessAttribute(
+                    type = ClubAttributeType.DIR,
+                    value = it,
+                    isCorrect = isExact, // Yön bilgisini sadece gösterim olarak kullanacağız
+                    correctValue = null
+                )
+            },
+            // Distance (km)
+            distance?.let {
+                ClubGuessAttribute(
+                    type = ClubAttributeType.DIST,
+                    value = "${it.toInt()}",
+                    isCorrect = isExact,
+                    correctValue = "0"
+                )
+            },
         )
-    )
+    }
+
+    private fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val R = 6371 // Dünya yarıçapı km
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = Math.sin(dLat / 2).pow(2.0) + Math.cos(Math.toRadians(lat1)) *
+                Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2).pow(2.0)
+        val c = 2 * Math.atan2(sqrt(a), sqrt(1 - a))
+        return R * c
+    }
+
+    private fun getDirection(lat1: Double, lon1: Double, lat2: Double, lon2: Double): String {
+        val dLon = Math.toRadians(lon2 - lon1)
+        val y = sin(dLon) * cos(Math.toRadians(lat2))
+        val x = cos(Math.toRadians(lat1)) * sin(Math.toRadians(lat2)) -
+                sin(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * cos(dLon)
+        val bearing = (Math.toDegrees(atan2(y, x)) + 360) % 360
+
+        return when {
+            bearing in 22.5..67.5 -> "↗"
+            bearing in 67.5..112.5 -> "→"
+            bearing in 112.5..157.5 -> "↘"
+            bearing in 157.5..202.5 -> "↓"
+            bearing in 202.5..247.5 -> "↙"
+            bearing in 247.5..292.5 -> "←"
+            bearing in 292.5..337.5 -> "↖"
+            else -> "↑"
+        }
+    }
+
 }

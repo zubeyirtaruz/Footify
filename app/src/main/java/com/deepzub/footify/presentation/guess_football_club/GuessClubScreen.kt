@@ -116,7 +116,7 @@ fun GuessClubScreen(
                     ) {
                         items(
                             items = state.guesses.reversed(), // En son tahmin en üstte
-                            key = { it.club.name } // benzersiz bir ID
+                            key = { it.guessId } // benzersiz bir ID
                         ) { row ->
                             ClubGuessRowItem(row)
                         }

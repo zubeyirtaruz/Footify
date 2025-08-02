@@ -95,7 +95,7 @@ fun GuessClubScreen(
                         ClubGuessSection(
                             userQuery = userQuery,
                             onQueryChange = { userQuery = it },
-                            placeholder = "GUESS ${state.guessCount} OF 8",
+                            placeholder = "GUESS ${state.guessCount} OF 6",
                             enabled = !state.isGameOver,
                             suggestions = state.clubs,
                             onGuessMade = { guess ->

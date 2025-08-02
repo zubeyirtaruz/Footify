@@ -49,7 +49,7 @@ fun HelpDialog(onDismiss: () -> Unit) {
 
                 Spacer(Modifier.height(12.dp))
 
-                Bullet("Test your football club knowledge and guess the football team in 8 tries. The mystery club can be located anywhere in the world.")
+                Bullet("Test your football club knowledge and guess the football team in 6 tries. The mystery club can be located anywhere in the world.")
                 Bullet("If you choose to show the club badge, there will be a small section of the team's crest visible. It will become slightly larger after each guess. For more of a challenge, selecting the hide badge option will mean that you will be entirely reliant upon the feedback to your guesses.")
                 Bullet("Feedback will be revealed comparing your guessed club. For example, if you guess FC Bayern Munchen…")
 

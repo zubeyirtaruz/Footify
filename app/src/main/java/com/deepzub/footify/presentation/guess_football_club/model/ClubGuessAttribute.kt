@@ -5,7 +5,9 @@ data class  ClubGuessAttribute(
     val value: String,
     val isCorrect: Boolean,
     val isImage: Boolean = false,
-    val correctValue: String? = null
+    val correctValue: String? = null,
+    val rawValue: Int? = null,
+    val rawCorrectValue: Int? = null
 ) {
     val label: String get() = type.label
 }

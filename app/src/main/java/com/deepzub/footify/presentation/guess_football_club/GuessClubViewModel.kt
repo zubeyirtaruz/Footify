@@ -135,7 +135,7 @@ class GuessClubViewModel @Inject constructor(
         val attrs = buildClubAttributes(guess, target, countries)
         val newRow = ClubGuessRow(guess, attrs)
         val newCount = _ui.value.guessCount + 1
-        val gameOver = attrs.all { it?.isCorrect == true } || newCount > 8
+        val gameOver = attrs.all { it?.isCorrect == true } || newCount > 6
 
         _ui.update {
             it.copy(
@@ -168,8 +168,11 @@ class GuessClubViewModel @Inject constructor(
 
         val isExact = distance != null && distance.toInt() == 0
 
+        val guessCapacityFormatted = formatCapacity(guess.stadiumCapacity)
+        val targetCapacityFormatted = formatCapacity(target.stadiumCapacity)
+
         return listOf(
-            // Nation (bayrak)
+            // Nation
             countries.find { it.name.equals(guess.country, true) }?.flag?.let { flag ->
                 ClubGuessAttribute(
                     type = ClubAttributeType.NATION,
@@ -183,21 +186,25 @@ class GuessClubViewModel @Inject constructor(
                 type = ClubAttributeType.EST,
                 value = guess.founded.toString(),
                 isCorrect = guess.founded == target.founded,
-                correctValue = target.founded.toString()
+                correctValue = target.founded.toString(),
+                rawValue = guess.founded,
+                rawCorrectValue = target.founded
             ),
             // Stadium capacity
             ClubGuessAttribute(
                 type = ClubAttributeType.CAPACITY,
-                value = guess.stadiumCapacity.toString(),
-                isCorrect = guess.stadiumCapacity == target.stadiumCapacity,
-                correctValue = target.stadiumCapacity.toString()
+                value = guessCapacityFormatted,
+                isCorrect = guessCapacityFormatted == targetCapacityFormatted,
+                correctValue = targetCapacityFormatted,
+                rawValue = guess.stadiumCapacity,
+                rawCorrectValue = target.stadiumCapacity
             ),
             // Direction
             direction?.let {
                 ClubGuessAttribute(
                     type = ClubAttributeType.DIR,
                     value = it,
-                    isCorrect = isExact, // Yön bilgisini sadece gösterim olarak kullanacağız
+                    isCorrect = isExact,
                     correctValue = null
                 )
             },
@@ -209,17 +216,17 @@ class GuessClubViewModel @Inject constructor(
                     isCorrect = isExact,
                     correctValue = "0"
                 )
-            },
+            }
         )
     }
 
     private fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val R = 6371 // Dünya yarıçapı km
+        val R = 6371
         val dLat = Math.toRadians(lat2 - lat1)
         val dLon = Math.toRadians(lon2 - lon1)
-        val a = Math.sin(dLat / 2).pow(2.0) + Math.cos(Math.toRadians(lat1)) *
-                Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2).pow(2.0)
-        val c = 2 * Math.atan2(sqrt(a), sqrt(1 - a))
+        val a = sin(dLat / 2).pow(2.0) + cos(Math.toRadians(lat1)) *
+                cos(Math.toRadians(lat2)) * sin(dLon / 2).pow(2.0)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
         return R * c
     }
 
@@ -230,16 +237,22 @@ class GuessClubViewModel @Inject constructor(
                 sin(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * cos(dLon)
         val bearing = (Math.toDegrees(atan2(y, x)) + 360) % 360
 
-        return when {
-            bearing in 22.5..67.5 -> "↗"
-            bearing in 67.5..112.5 -> "→"
-            bearing in 112.5..157.5 -> "↘"
-            bearing in 157.5..202.5 -> "↓"
-            bearing in 202.5..247.5 -> "↙"
-            bearing in 247.5..292.5 -> "←"
-            bearing in 292.5..337.5 -> "↖"
+        return when (bearing) {
+            in 22.5..67.5 -> "↗"
+            in 67.5..112.5 -> "→"
+            in 112.5..157.5 -> "↘"
+            in 157.5..202.5 -> "↓"
+            in 202.5..247.5 -> "↙"
+            in 247.5..292.5 -> "←"
+            in 292.5..337.5 -> "↖"
             else -> "↑"
         }
+    }
+
+    private fun formatCapacity(capacity: Int?): String {
+        if (capacity == null) return "?"
+        val valueInK = capacity / 1000
+        return "${valueInK}K"
     }
 
 }

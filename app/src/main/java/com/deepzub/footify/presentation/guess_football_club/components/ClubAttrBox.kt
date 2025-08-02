@@ -128,14 +128,15 @@ fun ClubAttrBox(attr: ClubGuessAttribute, modifier: Modifier = Modifier) {
 
 fun getDisplayAttrValue(attr: ClubGuessAttribute): String {
     val arrowTypes = setOf(ClubAttributeType.EST, ClubAttributeType.CAPACITY)
-    val guessed = attr.value.toIntOrNull()
-    val actual  = attr.correctValue?.toIntOrNull()
+    val guessed = attr.rawValue
+    val actual  = attr.rawCorrectValue
 
     return if (attr.type in arrowTypes && guessed != null && actual != null) {
-        when {
-            guessed < actual -> "$guessed↑"
-            guessed > actual -> "$guessed↓"
-            else             -> guessed.toString()
+        val direction = when {
+            guessed < actual -> "↑"
+            guessed > actual -> "↓"
+            else             -> ""
         }
+        "${attr.value}$direction"
     } else attr.value
 }
